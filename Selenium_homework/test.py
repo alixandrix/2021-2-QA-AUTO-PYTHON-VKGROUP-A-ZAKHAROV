@@ -5,6 +5,7 @@ import time
 FIO = 'Zakharov Alex Sergeevich'
 TEL_NUMBER = '89001234567'
 
+
 class TestOne(BaseCase):
 
     @pytest.mark.skip("SKIP")
