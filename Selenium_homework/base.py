@@ -21,8 +21,8 @@ class BaseCase:
         self.driver = driver
 
     def login(self):
-        enter_butt = self.find(basic_locators.ENTER1_LOCATOR)
-        enter_butt.click()
+        enter_btn = self.find(basic_locators.ENTER1_LOCATOR)
+        enter_btn.click()
         login = self.find(basic_locators.LOGIN_LOCATOR)
         login.clear()
         login.send_keys(LOGIN)
@@ -33,8 +33,8 @@ class BaseCase:
         enter.click()
 
     def logout(self):
-        exit_first_butt = self.find(basic_locators.INF_BUTT)
-        exit_first_butt.click()
+        exit_first_btn = self.find(basic_locators.INF_BTN)
+        exit_first_btn.click()
         time.sleep(4)
         self.find(basic_locators.EXIT_LOCATOR).click()
 

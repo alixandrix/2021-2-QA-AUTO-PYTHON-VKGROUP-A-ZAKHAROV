@@ -30,18 +30,18 @@ class TestOne(BaseCase):
 
     @pytest.mark.UI
     @pytest.mark.parametrize(
-        'locator, ideal_url',
+        'locator, expected_url',
         [
                 (basic_locators.PRO_LOCATOR, 'https://target.my.com/pro'),
             (basic_locators.COMPANY_LOCATOR, 'https://target.my.com/dashboard')
 
         ]
     )
-    def test_run_site(self, locator, ideal_url):
+    def test_run_site(self, locator, expected_url):
         self.login()
         time.sleep(1)
         self.find(locator).click()
-        assert self.driver.current_url == ideal_url
+        assert self.driver.current_url == expected_url
 
 
 
