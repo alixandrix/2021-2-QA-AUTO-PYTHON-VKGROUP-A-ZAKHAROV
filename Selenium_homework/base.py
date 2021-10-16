@@ -20,12 +20,6 @@ class BaseCase:
     def setup(self, driver):
         self.driver = driver
 
-    def search(self, query):
-        search = self.find(basic_locators.QUERY_LOCATOR)
-        search.send_keys(query)
-        go_button = self.find(basic_locators.GO_LOCATOR)
-        go_button.click()
-
     def login(self):
         enter_butt = self.find(basic_locators.ENTER1_LOCATOR)
         enter_butt.click()
@@ -56,7 +50,6 @@ class BaseCase:
         time.sleep(1)
         self.driver.refresh()
 
-
     def wait(self, timeout=None):
         if timeout is None:
             timeout = 5
@@ -65,12 +58,5 @@ class BaseCase:
     def find(self, locator, timeout=None):
         return self.wait(timeout).until(EC.presence_of_element_located(locator))
 
-    def click(self, locator, timeout=None):
-        for i in range(CLICK_RETRY):
-            try:
-                elem = self.find(locator, timeout=timeout)
-                elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
-                return
-            except StaleElementReferenceException:
-                if i == CLICK_RETRY - 1:
-                    raise
+
+
