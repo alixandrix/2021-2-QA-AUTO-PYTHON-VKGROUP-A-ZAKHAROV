@@ -68,8 +68,4 @@ def temp_dir(request):
     return test_dir
 
 
-@pytest.fixture(scope='session')
-def repo_root():
-    return os.path.abspath(os.path.join(__file__, os.path.pardir))
-
 

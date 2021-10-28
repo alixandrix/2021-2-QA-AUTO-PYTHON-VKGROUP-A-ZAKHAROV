@@ -1,7 +1,9 @@
-from ui.pages.main_page import MainPage
+import allure
+
 from ui.locators.basic_locators import LoginPageLocators, BasePageLocators
 from ui.pages.base_page import BasePage
-import logging
+from ui.pages.main_page import MainPage
+
 LOGIN = 'sasa60540@gmail.com'
 PASSWORD = 'Azaza123'
 
@@ -9,7 +11,7 @@ PASSWORD = 'Azaza123'
 class LoginPage(BasePage):
     locators = LoginPageLocators()
 
-
+    @allure.step('Login with {login}, {password}')
     def login(self, login=LOGIN, password=PASSWORD, correct=True):
         self.click(BasePageLocators.ENTER_LOCATOR)
         self.find(self.locators.LOGIN_LOCATOR).send_keys(login)

@@ -2,17 +2,17 @@ import logging
 import time
 
 import allure
-from selenium.webdriver import ActionChains
-
-from ui.locators import basic_locators
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+
+from ui.locators import basic_locators
 
 CLICK_RETRY = 3
 BASE_TIMEOUT = 10
 
-
+#pytest -s -l -v --debug_log --alluredir=/tmp/allure -n 2
 class PageNotLoadedException(Exception):
     pass
 
@@ -25,6 +25,7 @@ class BasePage(object):
         self.driver = driver
         self.logger = logging.getLogger('test')
         self.is_opened()
+
 
     def is_opened(self, timeout=BASE_TIMEOUT):
         started = time.time()
@@ -40,9 +41,6 @@ class BasePage(object):
             timeout = 5
         return WebDriverWait(self.driver, timeout=timeout)
 
-    @property
-    def action_chains(self):
-        return ActionChains(self.driver)
 
     def scroll_to(self, element):
         self.driver.execute_script('arguments[0].scrollIntoView(true);', element)

@@ -1,8 +1,8 @@
 import os
 import uuid
+
 import numpy
 from PIL import Image
-from conftest import temp_dir
 
 
 def create_image(my_dir):
