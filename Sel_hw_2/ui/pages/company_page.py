@@ -22,17 +22,19 @@ class CompanyPage(MainPage):
             my_url = self.find(self.locators.URL_LOCATOR)
             my_url.clear()
             my_url.send_keys('example.com')
-        my_name = self.find(self.locators.COMPANY_LOCATOR)
-        my_name.clear()
-        my_name.send_keys(name_company)
+        with allure.step('Enter name company'):
+            my_name = self.find(self.locators.COMPANY_LOCATOR)
+            my_name.clear()
+            my_name.send_keys(name_company)
         self.click(self.locators.BANNER_LOCATOR)
-        my_url = self.find(self.locators.URL2_LOCATOR)
-        my_url.clear()
-        my_url.send_keys('example.com')
-        ##################################
-        input_field = self.find(self.locators.UPLOAD_LOCATOR)
-        input_field.send_keys(cr.create_image(my_dir))
-        self.click(self.locators.SAVE_PNG_LOCATOR)
+        with allure.step('Enter second URL'):
+            my_url = self.find(self.locators.URL2_LOCATOR)
+            my_url.clear()
+            my_url.send_keys('example.com')
+        with allure.step('Upload picture'):
+            input_field = self.find(self.locators.UPLOAD_LOCATOR)
+            input_field.send_keys(cr.create_image(my_dir))
+            self.click(self.locators.SAVE_PNG_LOCATOR)
         self.click(self.locators.SAVE_COMPANY_LOCATOR)
         return CrCompanyPage(self.driver)
 

@@ -20,9 +20,10 @@ class SegmentPage(MainPage):
             self.click(self.locators.FIRST_CREATE_LOCATOR)
         self.click(self.locators.CHECKBOX_LOCATOR)
         self.click(self.locators.ADD_SEGMENT_LOCATOR)
-        my_name = self.find(self.locators.NAME_SEGMENT_LOCATOR)
-        my_name.clear()
-        my_name.send_keys(name)
+        with allure.step("Enter name segment"):
+            my_name = self.find(self.locators.NAME_SEGMENT_LOCATOR)
+            my_name.clear()
+            my_name.send_keys(name)
         self.click(self.locators.CREATE_SEGMENT_LOCATOR)
         self.find(self.locators.CHECKER_LOCATOR)
 
