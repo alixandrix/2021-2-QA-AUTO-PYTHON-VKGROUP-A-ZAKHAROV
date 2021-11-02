@@ -1,6 +1,5 @@
 import os
 import uuid
-
 import numpy
 from PIL import Image
 
@@ -13,5 +12,4 @@ def create_image(my_dir):
 
 
 def create_name():
-    name_comp = str(uuid.uuid4())
-    return name_comp
+    return str(uuid.uuid4())

@@ -1,19 +1,15 @@
 import os
-
 import allure
 import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.remote.webdriver import WebDriver
-
 from ui.pages.login_page import LoginPage
 from ui.pages.main_page import MainPage
 
 CLICK_RETRY = 3
 
-
 class BaseCase:
     authorize = True
-
     driver = None
 
     @pytest.fixture(scope='function', autouse=True)
@@ -24,7 +20,6 @@ class BaseCase:
             screenshot = os.path.join(temp_dir, 'failure.png')
             driver.get_screenshot_as_file(screenshot)
             allure.attach.file(screenshot, 'failure.png', attachment_type=allure.attachment_type.PNG)
-
             browser_log = os.path.join(temp_dir, 'browser.log')
             with open(browser_log, 'w') as f:
                 for i in driver.get_log('browser'):
@@ -38,8 +33,6 @@ class BaseCase:
         self.driver: WebDriver = driver
         self.config = config
         self.logger = logger
-        #self.base_page = BasePage(driver)
-
         self.login_page = LoginPage(driver)
         if self.authorize:
             cookies = request.getfixturevalue('cookies')
@@ -48,9 +41,6 @@ class BaseCase:
                     if cookie['sameSite'] == 'None':
                         cookie['sameSite'] = 'Lax'
                 self.driver.add_cookie(cookie)
-
             self.driver.refresh()
             self.main_page: MainPage = request.getfixturevalue('main_page')
-
         self.logger.debug('Initial setup completed')
-

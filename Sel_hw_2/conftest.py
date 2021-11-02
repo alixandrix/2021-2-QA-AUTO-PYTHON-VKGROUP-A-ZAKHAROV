@@ -7,14 +7,13 @@ import pytest
 
 
 def pytest_addoption(parser):
-    parser.addoption('--browser', default='chrome')
     parser.addoption('--url', default='https://target.my.com')
     parser.addoption('--debug_log', action='store_true')
 
 
 @pytest.fixture(scope='session')
 def config(request):
-    browser = request.config.getoption('--browser')
+    browser = 'chrome'
     url = request.config.getoption('--url')
     debug_log = request.config.getoption('--debug_log')
     return {'browser': browser, 'url': url, 'debug_log': debug_log}
@@ -66,6 +65,3 @@ def temp_dir(request):
                             request._pyfuncitem.nodeid.replace('/', '_').replace(':', '_'))
     os.makedirs(test_dir)
     return test_dir
-
-
-

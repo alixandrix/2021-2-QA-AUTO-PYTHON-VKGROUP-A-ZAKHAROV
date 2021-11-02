@@ -18,7 +18,10 @@ class LoginPageLocators:
 
 class CompanyPageLocators:
     FIRST_CREATE_LOCATOR = (By.XPATH, '//a[@href="/campaign/new"]')
-    CREATE_LOCATOR = (By.XPATH, '//div[contains(@class, "button-module-textWrapper")]')
+    HREF_LOCATOR = (By.XPATH, '//div[contains(@class, "nameCell-module-campaignNameCell")]//a[contains(@title, "{}")]')
+    PRE_DELETE_LOCATOR = (By.XPATH,
+                          '//div[contains(@data-test, "setting-{0} row-{0}")]//div[contains(@class, "icon-settings settingsCell-module-settingsIcon")]')
+    CREATE_LOCATOR = (By.XPATH, '//div[contains(@class, "button-module-blue")]')
     TRAFFIC_LOCATOR = (By.XPATH, '//div[contains(@class, "traffic")]')
     URL_LOCATOR = (By.XPATH, '//input[contains(@class, "mainUrl-module-searchInput")]')
     COMPANY_LOCATOR = (By.CSS_SELECTOR, "div[class='base-settings__campaign-name-wrap js-base-setting-campaign-name-wrap'] input[class='input__inp js-form-element']")
@@ -33,6 +36,10 @@ class CompanyPageLocators:
 
 class SegmentsPageLocators:
     FIRST_CREATE_LOCATOR = (By.XPATH, '//a[@href="/segments/segments_list/new/"]')
+    HREF_LOCATOR = (By.XPATH,
+                    '//div[contains(@class, "cells-module-nameCell")]//a[contains(@title, "{}")]')
+    PRE_DELETE_LOCATOR = (By.XPATH,
+                          '//div[contains(@data-test, "remove-{0} row-{0}")]/span[contains(@class, "icon-cross cells-module-removeCell")]')
     CREATE_LOCATOR = (By.XPATH, '//div[@class="segments-list__tbl-settings-wrap js-table-settings-wrap"]/div/button')
     TYPE_SEGMENT_LOCATOR = (By.XPATH, '//div[text()="Приложения и игры в соцсетях"]')
     CHECKBOX_LOCATOR = (By.XPATH, '//input[@class="adding-segments-source__checkbox js-main-source-checkbox"]')

@@ -1,5 +1,4 @@
 import allure
-
 from ui.locators.basic_locators import LoginPageLocators, BasePageLocators
 from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
@@ -19,6 +18,3 @@ class LoginPage(BasePage):
         self.click(self.locators.ENTER_LOCATOR)
         if correct:
             return MainPage(self.driver)
-
-
-
