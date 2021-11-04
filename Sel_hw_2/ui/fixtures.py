@@ -9,7 +9,6 @@ from ui.pages.base_page import BasePage
 from ui.pages.login_page import LoginPage
 
 
-
 @pytest.fixture
 def base_page(driver):
     return BasePage(driver=driver)
@@ -22,7 +21,8 @@ def main_page(driver):
 
 
 @pytest.fixture
-def login_page(driver):
+def login_page(driver, credentials):
+    from ui.pages.login_page import LoginPage
     return LoginPage(driver=driver)
 
 
@@ -80,22 +80,20 @@ def driver(config, temp_dir):
     browser.quit()
 
 
-@pytest.fixture(scope='function')
-def all_drivers(config):
-    url = config['url']
-    config['browser'] = ['chrome']
-    browser = get_driver(config)
-    browser.get(url)
-    yield browser
-    browser.quit()
-
-
 @pytest.fixture(scope='session')
-def cookies(config):
+def cookies(config, credentials):
     driver = get_driver(config)
     driver.get(config['url'])
     login_page = LoginPage(driver)
-    login_page.login()
+    login_page.login(*credentials)
     cookies = driver.get_cookies()
     driver.quit()
     return cookies
+
+
+@pytest.fixture(scope='session')
+def credentials():
+    with open('data.txt', 'r') as f:
+        user = f.readline().strip()
+        password = f.readline().strip()
+    return user, password

@@ -12,6 +12,7 @@ class TestInvalidAuthorization(BaseCase):
         login_page.login(login='sasa60540', password='Azaza123', correct=False)
         assert login_page.find(LoginPageLocators.BAD_LOGIN_LOCATOR)
 
+
     @pytest.mark.UI
     def test_invalid_password(self, login_page):
         login_page.login(login='sasa60540@gmail.com', password='Azaza228', correct=False)
@@ -30,6 +31,7 @@ class TestSegment(BaseCase):
     @pytest.mark.UI
     def test_create_segment(self, create_segment):
         assert create_segment in self.driver.page_source
+
 
     @pytest.mark.UI
     def test_delete_segment(self,  delete_segment):
