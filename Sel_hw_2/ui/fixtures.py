@@ -7,6 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import ui.utils.creator as cr
 from ui.pages.base_page import BasePage
 from ui.pages.login_page import LoginPage
+from ui.pages.main_page import MainPage
 
 
 @pytest.fixture
@@ -16,7 +17,6 @@ def base_page(driver):
 
 @pytest.fixture
 def main_page(driver):
-    from ui.pages.main_page import MainPage
     return MainPage(driver=driver)
 
 
