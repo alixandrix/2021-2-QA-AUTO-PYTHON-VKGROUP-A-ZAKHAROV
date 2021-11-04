@@ -6,8 +6,9 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import ui.utils.creator as cr
 from ui.pages.base_page import BasePage
-from ui.pages.login_page import LoginPage
 from ui.pages.main_page import MainPage
+from ui.pages.login_page import LoginPage
+
 
 
 @pytest.fixture
