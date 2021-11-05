@@ -42,7 +42,7 @@ def create_segment(main_page):
     segment = main_page.switcher(main_page.locators.NAVBAR_AUDIENCE_LOCATOR)
     segment_name = cr.create_name()
     segment.create_segments(segment_name)
-    yield segment_name
+    yield segment.extract_id(segment_name)
     segment.delete_segment(segment.extract_id(segment_name))
     segment.driver.refresh()
 

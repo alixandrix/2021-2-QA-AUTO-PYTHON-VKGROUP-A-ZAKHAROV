@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 from base import BaseCase
 from ui.fixtures import *
-from ui.locators.basic_locators import LoginPageLocators
+from ui.locators.basic_locators import *
 
 
 class TestInvalidAuthorization(BaseCase):
@@ -11,7 +11,6 @@ class TestInvalidAuthorization(BaseCase):
     def test_invalid_login(self, login_page):
         login_page.login(login='sasa60540', password='Azaza123', correct=False)
         assert login_page.find(LoginPageLocators.BAD_LOGIN_LOCATOR)
-
 
     @pytest.mark.UI
     def test_invalid_password(self, login_page):
@@ -23,15 +22,13 @@ class TestCreateCompany(BaseCase):
 
     @pytest.mark.UI
     def test_create_company(self, create_campaign):
-        assert create_campaign in self.driver.page_source
-
+        assert self.main_page.find((CompanyPageLocators.HREF_LOCATOR[0], CompanyPageLocators.HREF_LOCATOR[1].format(create_campaign)))
 
 class TestSegment(BaseCase):
 
     @pytest.mark.UI
     def test_create_segment(self, create_segment):
-        assert create_segment in self.driver.page_source
-
+        assert create_segment
 
     @pytest.mark.UI
     def test_delete_segment(self,  delete_segment):

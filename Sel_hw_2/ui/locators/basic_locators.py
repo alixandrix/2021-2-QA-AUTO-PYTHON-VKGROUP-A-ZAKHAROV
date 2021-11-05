@@ -1,6 +1,5 @@
 from selenium.webdriver.common.by import By
 
-
 class BasePageLocators:
     ENTER_LOCATOR = (By.XPATH, '//div[contains(@class, "responseHead-module-button")]')
 
@@ -20,18 +19,24 @@ class CompanyPageLocators:
     FIRST_CREATE_LOCATOR = (By.XPATH, '//a[@href="/campaign/new"]')
     HREF_LOCATOR = (By.XPATH, '//div[contains(@class, "nameCell-module-campaignNameCell")]//a[contains(@title, "{}")]')
     PRE_DELETE_LOCATOR = (By.XPATH,
-                          '//div[contains(@data-test, "setting-{0} row-{0}")]//div[contains(@class, "icon-settings settingsCell-module-settingsIcon")]')
+                          '//div[contains(@data-test, "setting-{0} row-{0}")]//div[contains(@class, "icon-settings '
+                          'settingsCell-module-settingsIcon")]')
     CREATE_LOCATOR = (By.XPATH, '//div[contains(@class, "button-module-blue")]')
     TRAFFIC_LOCATOR = (By.XPATH, '//div[contains(@class, "traffic")]')
     URL_LOCATOR = (By.XPATH, '//input[contains(@class, "mainUrl-module-searchInput")]')
-    COMPANY_LOCATOR = (By.CSS_SELECTOR, "div[class='base-settings__campaign-name-wrap js-base-setting-campaign-name-wrap'] input[class='input__inp js-form-element']")
+    COMPANY_LOCATOR = (By.CSS_SELECTOR, "div[class='base-settings__campaign-name-wrap "
+                                        "js-base-setting-campaign-name-wrap'] input[class='input__inp "
+                                        "js-form-element']")
     BANNER_LOCATOR = (By.ID, 'patterns_banner_4')
     URL2_LOCATOR = (By.XPATH, '//input[contains(@class, "roles-module-roleSearchInput")]')
     UPLOAD_LOCATOR = (By.XPATH, '//input[contains(@data-test, "image_240x400")]')
     SAVE_PNG_LOCATOR = (By.XPATH, '//input[contains(@class, "image-cropper__save js-save")]')
-    SAVE_COMPANY_LOCATOR = (By.CSS_SELECTOR, "div[class='footer__controls-wrap js-buttons-hidden-wrap'] button[class='button button_submit']")
-    CHECKER_LOCATOR = (By.XPATH, '//div[contains(@class, "notify-module-content")]/div[contains(@class, "icon-success toast-module-icon")]')
-    DELETE_COMPANY_LOCATOR = (By.XPATH, '//ul[contains(@class, "optionsList-module-optionsList-")]//li[contains(@class, "optionsList-module-option") and @data-id="3"]')
+    SAVE_COMPANY_LOCATOR = (By.CSS_SELECTOR, "div[class='footer__controls-wrap js-buttons-hidden-wrap'] button["
+                                             "class='button button_submit']")
+    CHECKER_LOCATOR = (By.XPATH, '//div[contains(@class, "notify-module-content")]/div[contains(@class, "icon-success '
+                                 'toast-module-icon")]')
+    DELETE_COMPANY_LOCATOR = (By.XPATH, '//ul[contains(@class, "optionsList-module-optionsList-")]//li[contains('
+                                        '@class, "optionsList-module-option") and @data-id="3"]')
 
 
 class SegmentsPageLocators:
@@ -39,12 +44,17 @@ class SegmentsPageLocators:
     HREF_LOCATOR = (By.XPATH,
                     '//div[contains(@class, "cells-module-nameCell")]//a[contains(@title, "{}")]')
     PRE_DELETE_LOCATOR = (By.XPATH,
-                          '//div[contains(@data-test, "remove-{0} row-{0}")]/span[contains(@class, "icon-cross cells-module-removeCell")]')
+                          '//div[contains(@data-test, "remove-{0} row-{0}")]/span[contains(@class, "icon-cross '
+                          'cells-module-removeCell")]')
     CREATE_LOCATOR = (By.XPATH, '//div[@class="segments-list__tbl-settings-wrap js-table-settings-wrap"]/div/button')
-    TYPE_SEGMENT_LOCATOR = (By.XPATH, '//div[text()="Приложения и игры в соцсетях"]')
+    TYPE_SEGMENT_LOCATOR = (By.XPATH, '//div[text()="Приложения и игры в соцсетях"]|//div[text()="Apps and games in '
+                                      'social networks"]')
     CHECKBOX_LOCATOR = (By.XPATH, '//input[@class="adding-segments-source__checkbox js-main-source-checkbox"]')
-    ADD_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="adding-segments-modal__footer"]//button[@class="button button_submit"]')
-    NAME_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="input input_create-segment-form"]//input[@class="input__inp js-form-element"]')
-    CREATE_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="create-segment-form__btn-wrap js-create-segment-button-wrap"]/button[@class="button button_submit"]')
+    ADD_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="adding-segments-modal__footer"]//button[@class="button '
+                                     'button_submit"]')
+    NAME_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="input input_create-segment-form"]//input[@class="input__inp '
+                                      'js-form-element"]')
+    CREATE_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="create-segment-form__btn-wrap '
+                                        'js-create-segment-button-wrap"]/button[@class="button button_submit"]')
     CHECKER_LOCATOR = (By.XPATH, '//div[contains(@class, "main-module-Table")]')
     CONFIRM_REMOVE_LOCATOR = (By.XPATH, '//button[@class="button button_confirm-remove button_general"]')
