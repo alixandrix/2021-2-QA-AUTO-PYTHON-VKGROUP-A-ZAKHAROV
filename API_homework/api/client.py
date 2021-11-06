@@ -297,11 +297,11 @@ class ApiClient:
                             jsonify=True)
         return res['id']
 
-    def get_compaign_id(self, comp_id):
+    def get_campaign_id(self, comp_id):
         resp = self._request('GET', urljoin(self.base_url, f'api/v2/campaigns.json?_id={comp_id}'), jsonify=True)
         return resp
 
-    def post_delete_compaign(self, comp_id):
+    def post_delete_campaign(self, comp_id):
         headers = {
             'Content-Type': 'application/json',
             'referer': 'https://target.my.com/dashboard',
