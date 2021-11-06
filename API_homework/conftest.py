@@ -69,12 +69,14 @@ def temp_dir(request):
     os.makedirs(test_dir)
     return test_dir
 
+
 @pytest.fixture(scope='session')
 def credentials():
     with open('cred.txt', 'r') as f:
         user = f.readline().strip()
         password = f.readline().strip()
     return user, password
+
 
 @pytest.fixture(scope='session')
 def api_client(config, credentials):

@@ -1,8 +1,5 @@
-import logging
 import uuid
-import allure
 import pytest
-
 
 
 @pytest.fixture(scope='session')
@@ -18,6 +15,7 @@ def cookies(api_client):
         cookies_list.append(cookie_dict)
 
     return cookies_list
+
 
 @pytest.fixture
 def create_name():
