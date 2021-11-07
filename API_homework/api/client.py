@@ -2,21 +2,11 @@ import logging
 from urllib.parse import urljoin
 from utils.creator import create_image as cr
 import requests
+from api.exceptions import *
+from api.data import *
 
 logger = logging.getLogger('test')
 MAX_RESPONSE_LENGTH = 666
-
-
-class InvalidLoginException(Exception):
-    pass
-
-
-class ResponseErrorException(Exception):
-    pass
-
-
-class ResponseStatusCodeException(Exception):
-    pass
 
 
 class ApiClient:
@@ -67,9 +57,6 @@ class ApiClient:
             raise ResponseStatusCodeException(f'Got {response.status_code} {response.request} for URL "{url}"')
         if jsonify:
             json_response = response.json()
-            if json_response.get('bStateError'):
-                error = json_response.get('sErrorMsg', 'Unknown')
-                raise ResponseErrorException(f'Request "{url}" returned error "{error}"')
             return json_response
 
         return response
@@ -77,13 +64,13 @@ class ApiClient:
     def post_login(self):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'referer': 'https://target.my.com/',
+            'referer': self.base_url,
         }
         data = {
             'email': self.user,
             'password': self.password,
-            'continue': 'https://target.my.com/auth/mycom?state=target_login%3D1%26ignore_opener%3D1#email',
-            'failure': 'https://account.my.com/login/'
+            'continue': urljoin(self.base_url, 'auth/mycom?state=target_login%3D1%26ignore_opener%3D1#email'),
+            'failure': urljoin(self.base_url, 'login/')
         }
         self._request('POST', self.login_url, headers=headers, data=data)
         self._request('GET', urljoin(self.base_url, 'scss/'), expected_status=404)
@@ -91,21 +78,11 @@ class ApiClient:
     def post_segment_create(self, name_segment):
         headers = {
             'Content-Type': 'application/json; charset=UTF-8',
-            'referer': 'https://target.my.com/',
             'X-CSRFToken': self.session.cookies.get('csrftoken'),
         }
-        json = {"name": name_segment,
-                "pass_condition": 1,
-                "relations": [{"object_type": "remarketing_player",
-                               "params": {"type": "positive",
-                                          "left": 365,
-                                          "right": 0}}],
-                "logicType": "or"}
-        res = self._request('POST',
-                            'https://target.my.com/api/v2/remarketing/segments.json?fields=relations__object_type,'
-                            'relations__object_id,relations__params,relations__params__score,relations__id,'
-                            'relations_count, '
-                            'id,name,pass_condition,created,campaign_ids,users,flags',
+        json = post_segment_create_json(name_segment)
+        res = self._request('POST', urljoin(self.base_url, 'api/v2/remarketing/segments.json?fields=relations__object_type,'
+                            'relations__object_id,relations__params,relations__id,id,name,pass_condition'),
                             headers=headers, json=json, jsonify=True)
         return res['id']
 
@@ -130,7 +107,7 @@ class ApiClient:
 
     def post_image_id(self, my_dir):
         headers1 = {
-            'Referer': 'https://target.my.com/campaign/new',
+            'Referer': urljoin(self.base_url, 'campaign/new'),
             'X-CSRFToken': self.session.cookies.get('csrftoken')
         }
         image_file = {
@@ -141,7 +118,7 @@ class ApiClient:
                              jsonify=True)
         headers2 = {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Referer': 'https://target.my.com/campaign/new',
+            'Referer': urljoin(self.base_url, 'campaign/new'),
             'X-CSRFToken': self.session.cookies.get('csrftoken')
         }
         json = {
@@ -154,157 +131,25 @@ class ApiClient:
                       expected_status=201)
         return res1['id']
 
-    def post_create_campaign(self, name_campaign, my_dir, null=None, false=False, true=True):
-        url_id = self.get_id_url()
-        image_id = self.post_image_id(my_dir)
+    def post_create_campaign(self, name_campaign, my_dir):
         headers = {
             'Content-Type': 'application/json',
-            'referer': 'https://target.my.com/campaign/new',
+            'referer': urljoin(self.base_url, 'campaign/new'),
             'X-Campaign-Create-Action': 'new',
             'X-CSRFToken': self.session.cookies.get('csrftoken')
         }
-
-        json = {
-            "name": name_campaign,
-            "read_only": false,
-            "conversion_funnel_id": null,
-            "objective": "traffic",
-            "enable_offline_goals": false,
-            "targetings": {
-                "split_audience": [
-                    1,
-                    2,
-                ],
-                "sex": [
-                    "male",
-                    "female"
-                ],
-                "age": {
-                    "age_list": [
-                        0,
-                        12,
-                        13,
-                        14,
-                        15
-
-                    ],
-                    "expand": true
-                },
-                "geo": {
-                    "regions": [
-                        188
-                    ]
-                },
-                "interests_soc_dem": [],
-                "segments": [],
-                "interests": [],
-                "fulltime": {
-                    "flags": [
-                        "use_holidays_moving",
-                        "cross_timezone"
-                    ],
-                    "mon": [
-                        0,
-                        1,
-                        2,
-                        3
-                    ],
-                    "tue": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4
-                    ],
-                    "wed": [
-                        0,
-                        1,
-                        2,
-                        3
-                    ],
-                    "thu": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ],
-                    "fri": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4
-                    ],
-                    "sat": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4
-                    ],
-                    "sun": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5,
-                        6
-                    ]
-                },
-                "pads": [
-                    102643
-                ],
-                "mobile_types": [
-                    "tablets",
-                    "smartphones"
-                ],
-                "mobile_vendors": [],
-                "mobile_operators": []
-            },
-            "age_restrictions": null,
-            "date_start": null,
-            "date_end": null,
-            "autobidding_mode": "second_price_mean",
-            "budget_limit_day": null,
-            "budget_limit": null,
-            "mixing": "fastest",
-            "utm": null,
-            "enable_utm": true,
-            "price": "3.53",
-            "max_price": "0",
-            "package_id": 961,
-            "banners": [
-                {
-                    "urls": {
-                        "primary": {
-                            "id": url_id
-                        }
-                    },
-                    "textblocks": {},
-                    "content": {
-                        "image_240x400": {
-                            "id": image_id
-                        }
-                    },
-                    "name": ""
-                }
-            ]
-        }
+        json = post_create_campaign_json(name_campaign, self.get_id_url(), self.post_image_id(my_dir))
         res = self._request('POST', urljoin(self.base_url, 'api/v2/campaigns.json'), headers=headers, json=json,
                             jsonify=True)
         return res['id']
 
     def get_campaign_id(self, comp_id):
-        resp = self._request('GET', urljoin(self.base_url, f'api/v2/campaigns.json?_id={comp_id}'), jsonify=True)
-        return resp
+        return self._request('GET', urljoin(self.base_url, f'api/v2/campaigns.json?_id={comp_id}'), jsonify=True)['items'][0]['id']
 
     def post_delete_campaign(self, comp_id):
         headers = {
             'Content-Type': 'application/json',
-            'referer': 'https://target.my.com/dashboard',
+            'referer': urljoin(self.base_url, 'dashboard'),
             'X-CSRFToken': self.session.cookies.get('csrftoken')
         }
         json = {'status': "deleted"}

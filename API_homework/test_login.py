@@ -23,5 +23,5 @@ class TestCampaign(ApiBase):
     @pytest.mark.API
     def test_campaign_create(self, create_name, temp_dir):
         c_id = self.api_client.post_create_campaign(create_name, temp_dir)
-        assert self.api_client.get_campaign_id(c_id)
+        assert self.api_client.get_campaign_id(c_id) == c_id
         self.api_client.post_delete_campaign(c_id)

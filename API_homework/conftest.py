@@ -3,7 +3,6 @@ import os
 import shutil
 import sys
 import allure
-import pytest
 
 from api.client import ApiClient
 from ui.fixtures import *
@@ -16,10 +15,9 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope='session')
 def config(request):
-    browser = 'chrome'
     url = request.config.getoption('--url')
     debug_log = request.config.getoption('--debug_log')
-    return {'browser': browser, 'url': url, 'debug_log': debug_log}
+    return {'url': url, 'debug_log': debug_log}
 
 
 @pytest.fixture(scope='function')
