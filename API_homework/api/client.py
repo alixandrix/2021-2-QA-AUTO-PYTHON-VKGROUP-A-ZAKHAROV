@@ -73,7 +73,7 @@ class ApiClient:
             'failure': urljoin(self.base_url, 'login/')
         }
         self._request('POST', self.login_url, headers=headers, data=data)
-        self._request('GET', urljoin(self.base_url, 'scss/'), expected_status=404)
+        self._request('GET', urljoin(self.base_url, 'csrf/'))
 
     def post_segment_create(self, name_segment):
         headers = {
@@ -81,8 +81,7 @@ class ApiClient:
             'X-CSRFToken': self.session.cookies.get('csrftoken'),
         }
         json = post_segment_create_json(name_segment)
-        res = self._request('POST', urljoin(self.base_url, 'api/v2/remarketing/segments.json?fields=relations__object_type,'
-                            'relations__object_id,relations__params,relations__id,id,name,pass_condition'),
+        res = self._request('POST', urljoin(self.base_url, 'api/v2/remarketing/segments.json?fields=id,name'),
                             headers=headers, json=json, jsonify=True)
         return res['id']
 
@@ -100,8 +99,8 @@ class ApiClient:
         return self._request('DELETE', urljoin(self.base_url, f'api/v2/remarketing/segments/{id_segment}.json'),
                              headers=headers, expected_status=204)
 
-    def get_id_url(self):
-        resp = self._request('GET', urljoin(self.base_url, 'api/v1/urls/?url=http%3A%2F%2Fexample.com%2F'),
+    def get_id_url(self, name_url):
+        resp = self._request('GET', urljoin(self.base_url, f'api/v1/urls/?url=http%3A%2F%2F{name_url}%2F'),
                              jsonify=True)
         return resp['id']
 
@@ -131,14 +130,14 @@ class ApiClient:
                       expected_status=201)
         return res1['id']
 
-    def post_create_campaign(self, name_campaign, my_dir):
+    def post_create_campaign(self, name_campaign, my_dir, name_url):
         headers = {
             'Content-Type': 'application/json',
             'referer': urljoin(self.base_url, 'campaign/new'),
             'X-Campaign-Create-Action': 'new',
             'X-CSRFToken': self.session.cookies.get('csrftoken')
         }
-        json = post_create_campaign_json(name_campaign, self.get_id_url(), self.post_image_id(my_dir))
+        json = post_create_campaign_json(name_campaign, self.get_id_url(name_url), self.post_image_id(my_dir))
         res = self._request('POST', urljoin(self.base_url, 'api/v2/campaigns.json'), headers=headers, json=json,
                             jsonify=True)
         return res['id']

@@ -8,7 +8,7 @@ class TestSegment(ApiBase):
     def test_segment_creator(self, create_name):
         self.api_client.post_segment_create(create_name)
         segm_id = self.api_client.get_segment_id(create_name)
-        assert segm_id
+        assert segm_id is not None
         self.api_client.delete_segment_id(segm_id)
 
     @pytest.mark.API
@@ -21,7 +21,8 @@ class TestSegment(ApiBase):
 class TestCampaign(ApiBase):
 
     @pytest.mark.API
-    def test_campaign_create(self, create_name, temp_dir):
-        c_id = self.api_client.post_create_campaign(create_name, temp_dir)
+    @pytest.mark.parametrize("name_url", ["example.com"])
+    def test_campaign_create(self, create_name, temp_dir, name_url):
+        c_id = self.api_client.post_create_campaign(create_name, temp_dir, name_url)
         assert self.api_client.get_campaign_id(c_id) == c_id
         self.api_client.post_delete_campaign(c_id)
