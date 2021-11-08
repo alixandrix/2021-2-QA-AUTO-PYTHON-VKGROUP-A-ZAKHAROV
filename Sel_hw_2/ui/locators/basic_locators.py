@@ -47,8 +47,7 @@ class SegmentsPageLocators:
                           '//div[contains(@data-test, "remove-{0} row-{0}")]/span[contains(@class, "icon-cross '
                           'cells-module-removeCell")]')
     CREATE_LOCATOR = (By.XPATH, '//div[@class="segments-list__tbl-settings-wrap js-table-settings-wrap"]/div/button')
-    TYPE_SEGMENT_LOCATOR = (By.XPATH, '//div[text()="Приложения и игры в соцсетях"]|//div[text()="Apps and games in '
-                                      'social networks"]')
+    TYPE_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="adding-segments-modal__block-left js-sources-types"]//div[8]')
     CHECKBOX_LOCATOR = (By.XPATH, '//input[@class="adding-segments-source__checkbox js-main-source-checkbox"]')
     ADD_SEGMENT_LOCATOR = (By.XPATH, '//div[@class="adding-segments-modal__footer"]//button[@class="button '
                                      'button_submit"]')
