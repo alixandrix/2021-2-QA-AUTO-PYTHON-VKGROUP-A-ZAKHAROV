@@ -28,7 +28,7 @@ class CompanyPage(MainPage):
             input_field.send_keys(cr.create_image(my_dir))
             self.click(self.locators.SAVE_PNG_LOCATOR)
         self.click(self.locators.SAVE_COMPANY_LOCATOR)
-        return CrCompanyPage(self.driver)
+
 
     @allure.step('Extract id from {name}')
     def extract_comp_id(self, name):
