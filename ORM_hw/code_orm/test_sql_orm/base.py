@@ -1,6 +1,4 @@
 import pytest
-
-from models.model import First, Second, Third
 from mysql_orm.client import MysqlORMClient
 from utils.builder_orm import MysqlORMBuilder
 
@@ -21,4 +19,3 @@ class MysqlBase:
         self.mysql.session.commit()
         task = self.mysql.session.query(schem)
         return task.all()
-

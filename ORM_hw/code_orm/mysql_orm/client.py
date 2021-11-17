@@ -1,7 +1,6 @@
 import sqlalchemy
 from sqlalchemy import inspect
 from sqlalchemy.orm import sessionmaker
-
 from models.model import Base
 
 

@@ -1,7 +1,6 @@
 from models.model import *
 
 
-
 class MysqlORMBuilder:
 
     def __init__(self, client):
@@ -18,7 +17,7 @@ class MysqlORMBuilder:
 
     def create_second_table(self, type_req, sum_req):
         if len(type_req) > 20:
-            type_req = 'rubbish'
+            type_req = 'strange method'
         second_task = Second(
             type_request=type_req,
             sum_request=sum_req
