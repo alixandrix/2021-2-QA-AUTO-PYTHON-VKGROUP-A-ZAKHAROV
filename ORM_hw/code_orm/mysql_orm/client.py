@@ -42,16 +42,6 @@ class MysqlORMClient:
         if fetch:
             return res.fetchall()
 
-    def create_first_task(self):
-        if not inspect(self.engine).has_table('first_task'):
-            Base.metadata.tables['first_task'].create(self.engine)
-
-    def create_second_task(self):
-        if not inspect(self.engine).has_table('second_task'):
-            Base.metadata.tables['second_task'].create(self.engine)
-
-    def create_third_task(self):
-        if not inspect(self.engine).has_table('third_task'):
-            Base.metadata.tables['third_task'].create(self.engine)
-
-
+    def create_task(self, name_of_task):
+        if not inspect(self.engine).has_table(name_of_task):
+            Base.metadata.tables[name_of_task].create(self.engine)

@@ -1,4 +1,5 @@
-from models.model import First, Second, Third
+from models.model import *
+
 
 
 class MysqlORMBuilder:
@@ -34,3 +35,23 @@ class MysqlORMBuilder:
         self.client.session.add(third_task)
         self.client.session.commit()
         return third_task
+
+    def create_fourth_table(self, url, status, size, ip_addr):
+        fourth_task = Fourth(
+            url=url,
+            status=status,
+            size=size,
+            ip_addr=ip_addr
+        )
+        self.client.session.add(fourth_task)
+        self.client.session.commit()
+        return fourth_task
+
+    def create_fifth_table(self, ip_addr, sum_req):
+        fifth_task = Fifth(
+            ip_addr=ip_addr,
+            sum_request=sum_req
+        )
+        self.client.session.add(fifth_task)
+        self.client.session.commit()
+        return fifth_task

@@ -1,6 +1,6 @@
 from test_sql_orm.funcs import *
 from test_sql_orm.base import MysqlBase
-from models.model import First, Second, Third
+from models.model import First, Second, Third, Fourth, Fifth
 
 
 class TestMysqlFirst(MysqlBase):
@@ -24,9 +24,10 @@ class TestMysqlSecond(MysqlBase):
         second = self.get_task(Second)
         assert len(second) == 5
 
+
 class TestMysqlThird(MysqlBase):
 
-    def prepare(self, log_file='access.log'):
+    def prepare(self, log_file):
         dict = popular_url(log_file)
         for k in dict.keys():
             self.third_task = self.mysql_builder.create_third_table(k, dict[k])
@@ -35,20 +36,25 @@ class TestMysqlThird(MysqlBase):
         third = self.get_task(Third)
         assert len(third) == 10
 
-"""class TestMysqlDelete(TestMysqlCreate):
 
-    # inherits prepare method from TestMysqlCreate
+class TestMysqlFourth(MysqlBase):
 
-    def test(self):
-        # tests should be independent, so
-        # we need to delete data created by this test
-        student_to_delete = self.students[0].id
-        self.mysql.session.query(Student).filter_by(id=student_to_delete).delete()
+    def prepare(self, log_file):
+        dict = client_error(log_file)
+        for k in dict.keys():
+            self.fourth_task = self.mysql_builder.create_fourth_table(k, dict[k][0], dict[k][1], dict[k][2])
 
-        # and get data by concrete prepod_id, created in current test
-        assert len(self.get_students(prepod_id=self.prepod.id)) == 9
+    def test_fourth(self):
+        fourth = self.get_task(Fourth)
+        assert len(fourth) == 5
 
-        # this code is wrong, we can't delete all students,
-        # cause there can be data from other tests running in parallel
-        self.mysql.session.query(Student).delete()
-        assert len(self.get_students()) == 0"""
+class TestMysqlFifth(MysqlBase):
+
+    def prepare(self, log_file):
+        dict = server_error(log_file)
+        for k in dict.keys():
+            self.fifth_task = self.mysql_builder.create_fifth_table(k, dict[k])
+
+    def test_fifth(self):
+        fifth = self.get_task(Fifth)
+        assert len(fifth) == 5

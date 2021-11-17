@@ -62,45 +62,45 @@ def popular_url(file):
 
 
 def client_error(file):
-    file.seek(0)
-    d = {}
-    for line in file:
-        size = re.findall(patt_size, line)
-        if len(size):
-            size_resp = int(size[0])
-            if size_resp not in d:
-                d[size_resp] = [[re.findall(patt_url, line), re.findall(patt_status_4XX, line), re.findall(patt_ip, line)]]
-            else:
-                d[size_resp] += [[re.findall(patt_url, line), re.findall(patt_status_4XX, line), re.findall(patt_ip, line)]]
-    i = 0
-    new_dict = {}
-    for k in sorted(d.keys(), reverse=True):
-        for j in range(len(d[k])):
-            i += 1
-            if i > 5:
-                break
-            new_dict[str(d[k][j][0][0])] = [str(d[k][j][1][0]), k, str(d[k][j][2][0])]
-    return new_dict
+    with open(file, 'r') as f:
+        d = {}
+        for line in f:
+            size = re.findall(patt_size, line)
+            if len(size):
+                size_resp = int(size[0])
+                if size_resp not in d:
+                    d[size_resp] = [[re.findall(patt_url, line), re.findall(patt_status_4XX, line), re.findall(patt_ip, line)]]
+                else:
+                    d[size_resp] += [[re.findall(patt_url, line), re.findall(patt_status_4XX, line), re.findall(patt_ip, line)]]
+        i = 0
+        new_dict = {}
+        for k in sorted(d.keys(), reverse=True):
+            for j in range(len(d[k])):
+                i += 1
+                if i > 5:
+                    break
+                new_dict[str(d[k][j][0][0])] = [str(d[k][j][1][0]), k, str(d[k][j][2][0])]
+        return new_dict
 
 
 def server_error(file):
-    file.seek(0)
-    d = {}
-    for line in file:
-        code = re.findall(patt_status_5XX, line)
-        if len(code):
-            client = re.findall(patt_ip, line)
-            if len(client):
-                if client[0] not in d:
-                    d[client[0]] = 1
-                else:
-                    d[client[0]] += 1
-    sorted_dict = {}
-    sorted_keys = sorted(d, key=d.get, reverse=True)
-    checker = []
-    for w in sorted_keys:
-        checker.append(w)
-        if len(checker) == 6:
-            break
-        sorted_dict[w] = d[w]
-    return sorted_dict
+    with open(file, 'r') as f:
+        d = {}
+        for line in f:
+            code = re.findall(patt_status_5XX, line)
+            if len(code):
+                client = re.findall(patt_ip, line)
+                if len(client):
+                    if client[0] not in d:
+                        d[client[0]] = 1
+                    else:
+                        d[client[0]] += 1
+        sorted_dict = {}
+        sorted_keys = sorted(d, key=d.get, reverse=True)
+        checker = []
+        for w in sorted_keys:
+            checker.append(w)
+            if len(checker) == 6:
+                break
+            sorted_dict[w] = d[w]
+        return sorted_dict
