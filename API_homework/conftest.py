@@ -70,7 +70,7 @@ def temp_dir(request):
 
 @pytest.fixture(scope='session')
 def credentials():
-    with open('cred.txt', 'r') as f:
+    with open(os.path.abspath(os.path.join(os.getcwd(), 'cred.txt')), 'r') as f:
         user = f.readline().strip()
         password = f.readline().strip()
     return user, password

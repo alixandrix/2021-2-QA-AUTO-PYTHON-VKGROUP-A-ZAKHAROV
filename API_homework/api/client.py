@@ -18,6 +18,12 @@ class ApiClient:
         self.password = password
         self.session = requests.Session()
 
+    @property
+    def headers(self):
+        return {
+            'X-CSRFToken': self.session.cookies.get('csrftoken')
+        }
+
     @staticmethod
     def log_pre(url, headers, data, expected_status, json, files):
         logger.info(f'Performing request:\n'
@@ -76,13 +82,9 @@ class ApiClient:
         self._request('GET', urljoin(self.base_url, 'csrf/'))
 
     def post_segment_create(self, name_segment):
-        headers = {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'X-CSRFToken': self.session.cookies.get('csrftoken'),
-        }
         json = post_segment_create_json(name_segment)
         res = self._request('POST', urljoin(self.base_url, 'api/v2/remarketing/segments.json?fields=id,name'),
-                            headers=headers, json=json, jsonify=True)
+                            headers=self.headers, json=json, jsonify=True)
         return res['id']
 
     def get_segment_id(self, name_segment):
@@ -92,12 +94,8 @@ class ApiClient:
                 return i['id']
 
     def delete_segment_id(self, id_segment):
-        headers = {
-            'Referer': 'https://target.my.com/segments/segments_list',
-            'X-CSRFToken': self.session.cookies.get('csrftoken')
-        }
-        return self._request('DELETE', urljoin(self.base_url, f'api/v2/remarketing/segments/{id_segment}.json'),
-                             headers=headers, expected_status=204)
+       return self._request('DELETE', urljoin(self.base_url, f'api/v2/remarketing/segments/{id_segment}.json'),
+                             headers=self.headers, expected_status=204)
 
     def get_id_url(self, name_url):
         resp = self._request('GET', urljoin(self.base_url, f'api/v1/urls/?url=http%3A%2F%2F{name_url}%2F'),
@@ -105,40 +103,25 @@ class ApiClient:
         return resp['id']
 
     def post_image_id(self, my_dir):
-        headers1 = {
-            'Referer': urljoin(self.base_url, 'campaign/new'),
-            'X-CSRFToken': self.session.cookies.get('csrftoken')
-        }
         image_file = {
             'file': open(cr(my_dir), 'rb')
         }
-        res1 = self._request('POST', urljoin(self.base_url, 'api/v2/content/static.json'), headers=headers1,
+        res1 = self._request('POST', urljoin(self.base_url, 'api/v2/content/static.json'), headers=self.headers,
                              files=image_file,
                              jsonify=True)
-        headers2 = {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Referer': urljoin(self.base_url, 'campaign/new'),
-            'X-CSRFToken': self.session.cookies.get('csrftoken')
-        }
         json = {
             "description": "Image.png",
             "content": {
                 "id": res1['id']
             }
         }
-        self._request('POST', urljoin(self.base_url, 'api/v2/mediateka.json'), headers=headers2, json=json,
+        self._request('POST', urljoin(self.base_url, 'api/v2/mediateka.json'), headers=self.headers, json=json,
                       expected_status=201)
         return res1['id']
 
     def post_create_campaign(self, name_campaign, my_dir, name_url):
-        headers = {
-            'Content-Type': 'application/json',
-            'referer': urljoin(self.base_url, 'campaign/new'),
-            'X-Campaign-Create-Action': 'new',
-            'X-CSRFToken': self.session.cookies.get('csrftoken')
-        }
         json = post_create_campaign_json(name_campaign, self.get_id_url(name_url), self.post_image_id(my_dir))
-        res = self._request('POST', urljoin(self.base_url, 'api/v2/campaigns.json'), headers=headers, json=json,
+        res = self._request('POST', urljoin(self.base_url, 'api/v2/campaigns.json'), headers=self.headers, json=json,
                             jsonify=True)
         return res['id']
 
@@ -146,11 +129,6 @@ class ApiClient:
         return self._request('GET', urljoin(self.base_url, f'api/v2/campaigns.json?_id={comp_id}'), jsonify=True)['items'][0]['id']
 
     def post_delete_campaign(self, comp_id):
-        headers = {
-            'Content-Type': 'application/json',
-            'referer': urljoin(self.base_url, 'dashboard'),
-            'X-CSRFToken': self.session.cookies.get('csrftoken')
-        }
         json = {'status': "deleted"}
-        self._request('POST', urljoin(self.base_url, f'api/v2/campaigns/{comp_id}.json'), headers=headers, json=json,
+        self._request('POST', urljoin(self.base_url, f'api/v2/campaigns/{comp_id}.json'), headers=self.headers, json=json,
                       expected_status=204)
