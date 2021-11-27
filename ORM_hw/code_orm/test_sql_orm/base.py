@@ -1,3 +1,5 @@
+from abc import abstractmethod
+from typing import Union
 import pytest
 from mysql_orm.client import MysqlORMClient
 from utils.builder_orm import MysqlORMBuilder
@@ -5,8 +7,10 @@ from utils.builder_orm import MysqlORMBuilder
 
 class MysqlBase:
 
-    def prepare(self, log_file):
+    @abstractmethod
+    def prepare(self, log_file: Union[str]) -> None:
         pass
+
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, mysql_orm_client):

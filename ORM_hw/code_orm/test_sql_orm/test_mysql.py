@@ -1,4 +1,4 @@
-from test_sql_orm.funcs import *
+from test_sql_orm.funcs import line_count, count_response, popular_url, client_error, server_error
 from test_sql_orm.base import MysqlBase
 from models.model import First, Second, Third, Fourth, Fifth
 

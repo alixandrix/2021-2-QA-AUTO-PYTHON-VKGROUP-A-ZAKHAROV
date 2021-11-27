@@ -1,4 +1,4 @@
-from models.model import *
+from models.model import First, Second, Third, Fourth, Fifth
 
 
 class MysqlORMBuilder:
