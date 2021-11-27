@@ -10,7 +10,7 @@ from werkzeug.serving import WSGIRequestHandler
 app = Flask(__name__)
 WSGIRequestHandler.protocol_version = "HTTP/1.1"
 
-SURNAME_DATA = {'A': 'B'}
+SURNAME_DATA = {}
 
 
 @app.route('/add_user', methods=['POST'])
@@ -23,10 +23,6 @@ def create_user():
 
     else:
         return jsonify(f'User_name {user_name} already exists: user_surname: {SURNAME_DATA[user_name]}'), 400
-
-@app.route('/get_all', methods=['GET'])
-def get_user_all():
-        return jsonify(SURNAME_DATA), 200
 
 
 @app.route('/get_user/<name>', methods=['GET'])
@@ -47,6 +43,7 @@ def put_user_surname():
     else:
         return jsonify(f'User "{user_name}" not found'), 404
 
+
 @app.route('/delete_user/<name>', methods=['DELETE'])
 def delete_user(name):
     try:
@@ -54,8 +51,6 @@ def delete_user(name):
         return jsonify(f'User "{name}" was deleted'), 200
     except KeyError:
         return jsonify(f'User "{name}" not found'), 404
-
-
 
 
 if __name__ == '__main__':
