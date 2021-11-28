@@ -1,7 +1,8 @@
-from fixtures import *
+import json
+from fixtures import client, name, surname
 
 
-class Test_GET(object):
+class TestGet(object):
 
     def test_negative_get(self, client, name):
         resp = client.get_request(name)
@@ -13,7 +14,7 @@ class Test_GET(object):
         assert '200' in resp[0] and surname == json.loads(resp[-1])
 
 
-class Test_POST(object):
+class TestPost(object):
 
     def test_positive_post(self, client, surname, name):
         client.post_request(name, surname)
@@ -26,7 +27,7 @@ class Test_POST(object):
         assert '400' in resp[0] and 'already exists' in json.loads(resp[-1])
 
 
-class Test_PUT(object):
+class TestPut(object):
 
     def test_negative_put(self, client, name, surname):
         resp = client.put_request(name, surname)
@@ -38,7 +39,7 @@ class Test_PUT(object):
         assert '201' in resp[0] and 'was updated' in json.loads(resp[-1])
 
 
-class Test_DELETE(object):
+class TestDelete(object):
 
     def test_negative_delete(self, client, name, surname):
         resp = client.delete_request(name)

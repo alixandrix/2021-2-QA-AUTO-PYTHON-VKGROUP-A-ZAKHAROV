@@ -11,7 +11,6 @@ import settings
 from loguru import logger
 
 
-
 def wait_ready(host, port):
     started = False
     st = time.time()

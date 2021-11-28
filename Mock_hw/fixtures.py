@@ -1,6 +1,6 @@
 import pytest
-from client.client import *
-from settings import *
+from client.client import Client
+from settings import MOCK_PORT, MOCK_HOST
 from faker import Faker
 
 fake = Faker()
