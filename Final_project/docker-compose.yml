@@ -1,0 +1,76 @@
+version: '2.1'
+
+services:
+  percona:
+    container_name: percona
+    networks:
+      - my_network
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    image: "percona:5.7"
+    tty: true
+    ports:
+      - 3306:3306
+    volumes:
+      - ${PWD}/databases/app_db/my_app.sql:/docker-entrypoint-initdb.d/app.sql
+      - ${PWD}/databases/mock_db/mock.sql:/docker-entrypoint-initdb.d/mock.sql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "-uroot", "-ppass", "ping", "-h", "percona" ]
+      timeout: 1s
+      retries: 30
+
+  myapp:
+    container_name: myapp
+    networks:
+      - my_network
+    image: "myapp:latest"
+    tty: true
+    entrypoint: /app/myapp --config=/tmp/conf
+    volumes:
+      - ${PWD}/conf:/tmp/conf
+    links:
+      - percona
+      - mock
+    ports:
+      - 8060:8060
+    depends_on:
+      mock:
+        condition: service_healthy
+
+  mock:
+    container_name: mock
+    image: "python_mock"
+    networks:
+      - my_network
+    hostname: ${MOCK_HOST}
+    environment:
+      - MOCK_HOST
+      - MOCK_PORT
+      - MOCK_DB
+    ports:
+      - "${MOCK_PORT}:${MOCK_PORT}"
+    healthcheck:
+      test: [ "CMD", "curl", "-v", "http://${MOCK_HOST}:${MOCK_PORT}/status" ]
+      timeout: 1s
+      retries: 3
+    depends_on:
+      percona:
+        condition: service_healthy
+
+  selenoid:
+    container_name: app_selenoid
+    image: "aerokube/selenoid:latest"
+    networks:
+      - my_network
+    volumes:
+      - ~/.aerokube/selenoid:/etc/selenoid
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["-container-network", "my_network_name", "-conf", "/etc/selenoid/browsers.json"]
+    ports:
+      - 4444:4444
+
+networks:
+  my_network:
+    external: true
+    name: my_network
+
