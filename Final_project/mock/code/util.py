@@ -6,12 +6,6 @@ import time
 import requests
 from requests.exceptions import ConnectionError
 
-#MOCK_HOST = '127.0.0.1'
-#MOCK_PORT = '8081'
-
-
-
-
 
 def wait_ready(host, port):
     started = False

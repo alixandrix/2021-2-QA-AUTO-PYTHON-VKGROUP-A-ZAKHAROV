@@ -1,24 +1,41 @@
-import logging
 import allure
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
-
-from UI.pages.base_page import BasePage
-from UI.pages.main_page import MainPage
-
+from utils.creator import Builder
+from utils.client import TesterClient
 
 
 @pytest.fixture
 def base_page(driver):
+    from pages.base_page import BasePage
     return BasePage(driver=driver)
 
 
 @pytest.fixture
+def client_mysql():
+    client = TesterClient()
+    client.connect()
+    yield client
+    client.connection.close()
+
+
+@pytest.fixture
 def main_page(driver):
+    from pages.main_page import MainPage
     return MainPage(driver=driver)
 
+
+@pytest.fixture
+def registr_page(driver):
+    from pages.registr_page import RegistrationPage
+    return RegistrationPage(driver=driver)
+
+
+@pytest.fixture
+def topic():
+    form_data = Builder().registration_form()
+    return form_data
 
 
 
