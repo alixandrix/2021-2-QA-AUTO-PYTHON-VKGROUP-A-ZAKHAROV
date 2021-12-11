@@ -1,6 +1,6 @@
 import logging
 import time
-
+from contextlib import contextmanager
 import allure
 from selenium.webdriver import ActionChains
 
@@ -8,7 +8,7 @@ from locators import basic_locators
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-
+from selenium.webdriver.common.keys import Keys
 
 
 CLICK_RETRY = 3
@@ -20,6 +20,7 @@ class PageNotLoadedException(Exception):
 
 
 class BasePage(object):
+
     url = 'http://myapp:8060/'
     locators = basic_locators.BasePageLocators
 
@@ -75,7 +76,11 @@ class BasePage(object):
 
     @allure.step('Switch to registration page')
     def switch(self):
+        self.find(self.locators.CREATE_ACCOUNT, timeout=1)
         self.click(self.locators.CREATE_ACCOUNT)
-        from pages.registr_page import RegistrationPage
-        return RegistrationPage(self.driver)
+        from pages.auth_page import AuthPage
+        return AuthPage(self.driver)
+
+
+
 

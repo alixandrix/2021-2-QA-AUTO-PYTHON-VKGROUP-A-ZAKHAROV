@@ -27,16 +27,9 @@ def main_page(driver):
 
 
 @pytest.fixture
-def registr_page(driver):
-    from pages.registr_page import RegistrationPage
-    return RegistrationPage(driver=driver)
-
-
-@pytest.fixture
-def topic():
-    form_data = Builder().registration_form()
-    return form_data
-
+def auth_page(driver):
+    from pages.auth_page import AuthPage
+    return AuthPage(driver=driver)
 
 
 

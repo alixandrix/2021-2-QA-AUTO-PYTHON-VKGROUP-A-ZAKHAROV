@@ -26,11 +26,14 @@ class TesterClient:
         sm = sessionmaker(bind=self.connection.engine)
         self.session = sm()
 
-    def get_data(self):
+    def get_data(self, username):
         self.session.commit()
-        resp = self.session.query(App_tb)
+        resp = self.session.query(App_tb).filter_by(username=username).first()
         return resp
+
+
 
     def delete_user(self, username):
         self.session.commit()
         self.session.query(App_tb).filter_by(username=username).delete()
+        self.session.commit()

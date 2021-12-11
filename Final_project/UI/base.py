@@ -5,7 +5,7 @@ from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.remote.webdriver import WebDriver
 from pages.base_page import BasePage
 from pages.main_page import MainPage
-from pages.registr_page import RegistrationPage
+from pages.auth_page import AuthPage
 from utils.creator import Builder
 
 CLICK_RETRY = 3
@@ -40,7 +40,9 @@ class BaseCase:
         self.logger = logger
         self.builder = Builder()
         self.base_page: BasePage = request.getfixturevalue('base_page')
-        self.logger.debug('Initial setup completed')
+        self.logger.info('Initial setup completed')
+
+
 
         
 

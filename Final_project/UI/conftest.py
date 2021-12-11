@@ -5,13 +5,9 @@ import logging
 from fixtures import *
 
 
-def pytest_addoption(parser):
-    parser.addoption('--selenoid', action='store_true')
-
-
 
 @pytest.fixture(scope='session')
-def config(request):
+def config():
     browser = 'chrome'
     url = 'http://myapp:8060/'
     selenoid = 'http://127.0.0.1:4444/wd/hub'
@@ -60,8 +56,12 @@ def pytest_configure(config):
 
 @pytest.fixture(scope='function')
 def temp_dir(request):
+    name = request._pyfuncitem.nodeid.replace('/', '_').replace(':', '_')
+    if len(name) > 120:
+        name = name[:120]
     test_dir = os.path.join(request.config.base_temp_dir,
-                            request._pyfuncitem.nodeid.replace('/', '_').replace(':', '_'))
+                            name)
+
     os.makedirs(test_dir)
     return test_dir
 

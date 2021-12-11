@@ -30,7 +30,7 @@ class MainPageLocators:
     LOGOUT_LOCATOR = (By.XPATH, '//div/a[@href="/logout"]')
 
 
-class RegistrPageLocators:
+class AuthPageLocators:
     SUBMIT = (By.ID, "submit")
     LOGIN_LOCATOR = (By.ID, "username")
     EMAIL_LOCATOR = (By.ID, "email")
