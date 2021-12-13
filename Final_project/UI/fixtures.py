@@ -4,11 +4,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from utils.creator import Builder
 from utils.client import TesterClient
+from pages.base_page import BasePage
 
 
 @pytest.fixture
 def base_page(driver):
-    from pages.base_page import BasePage
     return BasePage(driver=driver)
 
 
@@ -19,19 +19,10 @@ def client_mysql():
     yield client
     client.connection.close()
 
-
 @pytest.fixture
 def main_page(driver):
     from pages.main_page import MainPage
     return MainPage(driver=driver)
-
-
-@pytest.fixture
-def auth_page(driver):
-    from pages.auth_page import AuthPage
-    return AuthPage(driver=driver)
-
-
 
 def get_driver(config):
     browser_name = config['browser']
@@ -60,6 +51,16 @@ def driver(config):
     yield browser
     browser.quit()
 
+@pytest.fixture(scope='session')
+def cookies(config):
+    driver = get_driver(config)
+    #driver.get(config['url'])
+    base_page = BasePage(driver)
+    auth_p = base_page.switch()
+    auth_p.register(Builder.username(), Builder.password(), Builder.email())
+    cookies = driver.get_cookies()
+    driver.quit()
+    return cookies
 
 
 

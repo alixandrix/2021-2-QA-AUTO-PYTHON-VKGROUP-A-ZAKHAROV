@@ -8,8 +8,13 @@ class BasePageLocators:
     CONFIRM_LOCATOR = (By.ID, "submit")
 
 
+class LoginPageLocators(BasePageLocators):
+    pass
+
+
 class MainPageLocators:
     LOGIN_LOCATOR = (By.XPATH, '//div[@id="login-name"]//li[text()="Logged as {}"]')
+    VK_ID_LOCATOR = (By.XPATH, '//div[@id="login-name"]//li[contains(text(), "VK ID")]')
     API_LOCATOR = (By.XPATH, '//a[@href="https://en.wikipedia.org/wiki/Application_programming_interface"]/img['
                              '@src="/static/images/laptop.png"]')
     INTERNET_FUTURE_LOCATOR = (By.XPATH, '//a[@href="https://www.popularmechanics.com/technology/infrastructure'

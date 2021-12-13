@@ -4,15 +4,13 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.remote.webdriver import WebDriver
 from pages.base_page import BasePage
-from pages.main_page import MainPage
-from pages.auth_page import AuthPage
 from utils.creator import Builder
-
+from pages.main_page import MainPage
 CLICK_RETRY = 3
 
 
 class BaseCase:
-
+    authorize = True
     driver = None
 
     @pytest.fixture(scope='function', autouse=True)
@@ -39,8 +37,18 @@ class BaseCase:
         self.config = config
         self.logger = logger
         self.builder = Builder()
-        self.base_page: BasePage = request.getfixturevalue('base_page')
+        self.base_page = BasePage(driver)
+        if self.authorize:
+            cookies = request.getfixturevalue('cookies')
+            for cookie in cookies:
+                if 'sameSite' in cookie:
+                    if cookie['sameSite'] == 'None':
+                        cookie['sameSite'] = 'Lax'
+                self.driver.add_cookie(cookie)
+            self.driver.refresh()
+            self.main_page = request.getfixturevalue('main_page')
         self.logger.info('Initial setup completed')
+
 
 
 

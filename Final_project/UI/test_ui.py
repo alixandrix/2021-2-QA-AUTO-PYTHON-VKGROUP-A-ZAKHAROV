@@ -5,6 +5,7 @@ from utils.creator import Builder
 
 
 class TestPositiveAuth(BaseCase):
+    authorize = False
 
     def test_positive_auth(self, client_mysql):
         username = self.builder.username(username_length=10)
@@ -100,6 +101,7 @@ class TestPositiveAuth(BaseCase):
 
 
 class TestNegativeAuth(BaseCase):
+    authorize = False
 
     def test_negative_one_empty_auth(self, client_mysql):
         auth_page = self.base_page.switch()
@@ -215,6 +217,24 @@ class TestNegativeAuth(BaseCase):
         client_mysql.delete_user(username)
         assert password_db == password
         assert user
+
+class TestPositiveMain(BaseCase):
+
+    def test_positive_logout(self):
+        self.logger.info(f"Check button logout")
+        self.main_page.click(self.main_page.locators.LOGOUT_LOCATOR)
+        assert self.main_page.find(self.base_page.locators.LOGIN_LOCATOR)
+
+    def test_positive_vk(self, fast_registration):
+        self.logger.info(f"Check VK_ID")
+        main_p = fast_registration
+        main_p.driver.refresh()
+        assert main_p.find(main_p.locators.VK_ID_LOCATOR)
+
+    def test_positive_body(self, fast_registration):
+        self.logger.info(f"Testing body content")
+
+
 
 
 
