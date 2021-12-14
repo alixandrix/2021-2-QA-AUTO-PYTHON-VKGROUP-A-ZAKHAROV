@@ -6,7 +6,7 @@ from pages.base_page import BasePage
 
 class MainPage(BasePage):
 
-    url = 'http://myapp:8060/welcome/'
+    url = 'http://myapp_proxy:8070/welcome/'
     locators = MainPageLocators()
 
     @allure.step('Checking strange facts')

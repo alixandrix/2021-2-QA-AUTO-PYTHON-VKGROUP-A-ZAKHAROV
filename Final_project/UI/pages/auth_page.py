@@ -6,7 +6,7 @@ from locators.basic_locators import AuthPageLocators, MainPageLocators
 
 
 class AuthPage(BasePage):
-    url = 'http://myapp:8060/reg'
+    url = 'http://myapp_proxy:8070/reg'
     locators = AuthPageLocators()
 
     @allure.step('Registration with {login}, {password}, {email}')

@@ -12,7 +12,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 CLICK_RETRY = 3
-BASE_TIMEOUT = 10
+BASE_TIMEOUT = 12
 
 
 class PageNotLoadedException(Exception):
@@ -21,7 +21,7 @@ class PageNotLoadedException(Exception):
 
 class BasePage(object):
 
-    url = 'http://myapp:8060/'
+    url = 'http://myapp_proxy:8070/'
     locators = basic_locators.BasePageLocators
 
     def __init__(self, driver):

@@ -9,9 +9,10 @@ from fixtures import *
 @pytest.fixture(scope='session')
 def config():
     browser = 'chrome'
-    url = 'http://myapp:8060/'
+    url = 'http://myapp_proxy:8070/'
     selenoid = 'http://127.0.0.1:4444/wd/hub'
-    return {'browser': browser, 'url': url, 'selenoid': selenoid}
+    vnc = True
+    return {'browser': browser, 'url': url, 'selenoid': selenoid, 'vnc': vnc}
 
 
 @pytest.fixture(scope='function')

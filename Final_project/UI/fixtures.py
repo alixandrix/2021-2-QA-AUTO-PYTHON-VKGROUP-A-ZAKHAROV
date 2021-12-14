@@ -5,7 +5,8 @@ from selenium.webdriver.chrome.options import Options
 from utils.creator import Builder
 from utils.client import TesterClient
 from pages.base_page import BasePage
-
+from pages.login_page import LoginPage
+from selenium.webdriver.remote.webdriver import WebDriver
 
 @pytest.fixture
 def base_page(driver):
@@ -27,11 +28,14 @@ def main_page(driver):
 def get_driver(config):
     browser_name = config['browser']
     selenoid = config['selenoid']
+    vnc = config['vnc']
     if browser_name == 'chrome':
         options = Options()
         capabilities = {
                 'browserName': 'chrome',
-                'version': '96.0'
+                'version': '96.0_vnc',
+                'enableVNC': True
+
             }
         browser = webdriver.Remote(selenoid, options=options,
                                        desired_capabilities=capabilities)
@@ -53,11 +57,17 @@ def driver(config):
 
 @pytest.fixture(scope='session')
 def cookies(config):
-    driver = get_driver(config)
-    #driver.get(config['url'])
+    driver: WebDriver = get_driver(config)
+    driver.get(config['url'])
     base_page = BasePage(driver)
-    auth_p = base_page.switch()
-    auth_p.register(Builder.username(), Builder.password(), Builder.email())
+    auth_page = base_page.switch()
+    user = Builder.username()
+    password = Builder.password()
+    main_p = auth_page.register(user, password, Builder.email())
+    main_p.find(main_p.locators.LOGOUT_LOCATOR)
+    """login_page = LoginPage(driver)
+    main_p = login_page.login('CDrpxeD', 'XUCzXsacoEYtoEnTnebSUCwJ')
+    main_p.find(main_p.locators.LOGOUT_LOCATOR)"""
     cookies = driver.get_cookies()
     driver.quit()
     return cookies

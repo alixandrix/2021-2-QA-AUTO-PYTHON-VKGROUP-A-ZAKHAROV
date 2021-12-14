@@ -233,8 +233,7 @@ class TestPositiveMain(BaseCase):
 
     def test_positive_body(self, fast_registration):
         self.logger.info(f"Testing body content")
-
-
+#login_page: make test email:password
 
 
 

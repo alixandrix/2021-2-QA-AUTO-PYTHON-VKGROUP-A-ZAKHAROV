@@ -3,6 +3,8 @@ import allure
 import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support.wait import WebDriverWait
+
 from pages.base_page import BasePage
 from utils.creator import Builder
 from pages.main_page import MainPage
@@ -41,10 +43,8 @@ class BaseCase:
         if self.authorize:
             cookies = request.getfixturevalue('cookies')
             for cookie in cookies:
-                if 'sameSite' in cookie:
-                    if cookie['sameSite'] == 'None':
-                        cookie['sameSite'] = 'Lax'
-                self.driver.add_cookie(cookie)
+                print(cookie)
+                self.driver.add_cookie({'name': cookie['name'], 'value': cookie['value']})
             self.driver.refresh()
             self.main_page = request.getfixturevalue('main_page')
         self.logger.info('Initial setup completed')

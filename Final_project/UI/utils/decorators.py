@@ -5,7 +5,7 @@ class TimeoutException(Exception):
     pass
 
 
-def wait(method, error=Exception, timeout=10, interval=0.5, check=False, **kwargs):
+def wait(method, error=Exception, timeout=15, interval=0.5, check=False, **kwargs):
     started = time.time()
     last_exception = None
     while time.time() - started < timeout:

@@ -7,7 +7,7 @@ from pages.main_page import MainPage
 
 class LoginPage(BasePage):
 
-    url = 'http://myapp:8060/'
+    url = 'http://myapp_proxy:8070'
     locators = LoginPageLocators()
 
     @allure.step('login with {username} {password}')
