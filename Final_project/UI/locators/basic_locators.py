@@ -6,6 +6,7 @@ class BasePageLocators:
     LOGIN_LOCATOR = (By.ID, "username")
     PASSWORD_LOCATOR = (By.ID, "password")
     CONFIRM_LOCATOR = (By.ID, "submit")
+    ERROR_LOCATOR = (By.ID, "submit")
 
 
 class LoginPageLocators(BasePageLocators):
@@ -33,6 +34,7 @@ class MainPageLocators:
     WIRESHARK_DOWNLOAD_LOCATORS = (By.XPATH, '//li/a[@href="https://www.wireshark.org/#download"]')
     TCPDUMP_LOCATOR = (By.XPATH, '//li/a[@href="https://hackertarget.com/tcpdump-examples/"]')
     LOGOUT_LOCATOR = (By.XPATH, '//div/a[@href="/logout"]')
+    INCORRECT_LENGTH_LOCATOR = (By.ID, "flash")
 
 class AuthPageLocators:
     SUBMIT = (By.ID, "submit")

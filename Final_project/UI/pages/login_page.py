@@ -5,6 +5,9 @@ from pages.base_page import BasePage
 from pages.main_page import MainPage
 
 
+class ErrorLoginException(Exception):
+    pass
+
 class LoginPage(BasePage):
 
     url = 'http://myapp_proxy:8070/'
@@ -18,5 +21,5 @@ class LoginPage(BasePage):
         try:
             self.find(MainPageLocators.LOGOUT_LOCATOR)
         except TimeoutException:
-            print("Error in registration!")
+            raise ErrorLoginException
         return MainPage(self.driver)

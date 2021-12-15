@@ -5,6 +5,16 @@ from flask import Flask, jsonify
 from client import MysqlORMClient
 
 app = Flask(__name__)
+import signal
+
+class ServerTerminationError(Exception):
+    pass
+
+def exit_gracefully(signum, frame):
+    raise ServerTerminationError()
+
+signal.signal(signal.SIGINT, exit_gracefully)
+signal.signal(signal.SIGTERM, exit_gracefully)
 
 client = MysqlORMClient()
 
@@ -27,4 +37,7 @@ def get_status():
 if __name__ == '__main__':
     host = os.environ['MOCK_HOST']
     port = os.environ['MOCK_PORT']
-    app.run(host, int(port))
+    try:
+        app.run(host, int(port))
+    except ServerTerminationError:
+        pass

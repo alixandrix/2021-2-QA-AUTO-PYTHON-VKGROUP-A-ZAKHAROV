@@ -15,6 +15,7 @@ CLICK_RETRY = 3
 class BaseCase:
     authorize = True
     driver = None
+    need_login = True
 
     @pytest.fixture(scope='function', autouse=True)
     def ui_report(self, driver, request, temp_dir):
@@ -47,10 +48,12 @@ class BaseCase:
             cookies = data[0]
             self.user = data[1]
             self.password = data[2]
-            for cookie in cookies:
-                self.driver.add_cookie({'name': cookie['name'], 'value': cookie['value']})
-            self.driver.refresh()
-            self.main_page = request.getfixturevalue('main_page')
+            self.email = data[3]
+            if self.need_login:
+                for cookie in cookies:
+                    self.driver.add_cookie({'name': cookie['name'], 'value': cookie['value']})
+                self.driver.refresh()
+                self.main_page = request.getfixturevalue('main_page')
         self.logger.info('Initial setup completed')
 
     @contextmanager

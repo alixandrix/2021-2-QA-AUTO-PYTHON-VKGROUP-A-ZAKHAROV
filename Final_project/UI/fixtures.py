@@ -54,6 +54,17 @@ def driver(config):
     browser.quit()
 
 @pytest.fixture(scope='session')
+def registration(base_page):
+    auth_page = base_page.switch()
+    user = Builder.username()
+    password = Builder.password()
+    main_p = auth_page.register(user, password, Builder.email())
+    main_p.find(main_p.locators.LOGOUT_LOCATOR)
+    return user, password
+
+
+
+@pytest.fixture(scope='session')
 def cookies(config):
     driver: WebDriver = get_driver(config)
     driver.get(config['url'])
@@ -61,11 +72,12 @@ def cookies(config):
     auth_page = base_page.switch()
     user = Builder.username()
     password = Builder.password()
-    main_p = auth_page.register(user, password, Builder.email())
+    email = Builder.email()
+    main_p = auth_page.register(user, password, email)
     main_p.find(main_p.locators.LOGOUT_LOCATOR)
     cookies = driver.get_cookies()
     driver.quit()
-    return cookies, user, password
+    return cookies, user, password, email
 
 
 

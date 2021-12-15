@@ -1,10 +1,12 @@
+import random
+
 import allure
 import pytest
 
 from base import BaseCase
 from locators import basic_locators
 from utils.creator import Builder
-from fixtures import main_page
+from pages.login_page import ErrorLoginException
 
 class TestPositiveAuth(BaseCase):
     authorize = False
@@ -296,13 +298,77 @@ class TestPositiveMain(BaseCase):
 
 
 class TestPositiveLoginPage(BaseCase):
-    authorize = False
-    #впихнуть еще 1 флаг на логин в бэйс
+    need_login = False
 
     def test_positive_login(self):
-        self.logger.info(f"Testing login page")
+        self.logger.info(f"Testing normal login page")
         self.login_page.login(self.user, self.password)
-        assert self.driver.current_url == self.main_page.url
+        assert self.driver.current_url == 'http://myapp_proxy:8070/welcome/'
+
+    def test_positive_login_spaces(self):
+        self.logger.info(f"Testing normal login page")
+        self.login_page.login((self.user+' '), self.password)
+        assert self.driver.current_url == 'http://myapp_proxy:8070/welcome/'
+
+    def test_positive_login_back_spaces(self):
+        self.logger.info(f"Testing login page, while going back and add spaces")
+        self.login_page.login(self.user, self.password)
+        self.driver.back()
+        self.login_page.find(self.login_page.locators.LOGIN_LOCATOR)
+        main_p = self.login_page.login((self.user+10*' '), self.password)
+        assert self.driver.current_url == 'http://myapp_proxy:8070/welcome/' and main_p.find(main_p.locators.INCORRECT_LENGTH_LOCATOR) #bug
+
+    @pytest.mark.parametrize(
+        'username, password',
+        [
+            ('', random.randint(1, 255)),
+            (random.randint(6, 16), '')
+        ]
+    )
+    def test_positive_fill_field(self, username, password):
+        self.logger.info(f"Testing login page on not field fields")
+        with pytest.raises(ErrorLoginException):
+            self.login_page.login(username, password)
+            assert self.driver.current_url == self.login_page.url and 'Please fill out this field' in self.driver.page_source
+
+
+
+class TestNegativeLoginPage(BaseCase):
+    need_login = False
+
+    def test_negative_login(self):
+        self.logger.info(f"Testing login page with not created username and password")
+        with pytest.raises(ErrorLoginException):
+            self.login_page.login(self.builder.username(), self.builder.password())
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+
+    def test_negative_login_email(self):
+        self.logger.info(f"Testing login page with email not login")
+        with pytest.raises(ErrorLoginException):
+            self.login_page.login(self.email, self.password)
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+
+    def test_negative_without_login(self):
+        self.logger.info(f"Testing login page without login")
+        with pytest.raises(ErrorLoginException):
+            self.login_page.login('', self.password)
+            assert self.driver.current_url == self.login_page.url  and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+
+    def test_negative_password_spaces(self):
+        self.logger.info(f"Testing login page without login")
+        with pytest.raises(ErrorLoginException):
+            self.login_page.login(self.user, (self.password+'  '))
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+
+    def test_negative_login_spaces(self):
+        self.logger.info(f"Testing login page without login")
+        with pytest.raises(ErrorLoginException):
+            self.login_page.login(' ' + self.user, self.password)
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+
+# мб 1 верное поле 2 не верное
+
+
 
 
 
