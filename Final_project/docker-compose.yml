@@ -68,15 +68,6 @@ services:
     command: ["-container-network", "my_network", "-conf", "/etc/selenoid/browsers.json"]
     ports:
       - 4444:4444
-  selenoid-ui:
-    image: "aerokube/selenoid-ui"
-    networks:
-      - my_network
-    links:
-      - selenoid
-    ports:
-      - 8080:8080
-    command: [ "--selenoid-uri", "http://selenoid:4444" ]
 
   myapp_proxy:
     container_name: myapp_proxy

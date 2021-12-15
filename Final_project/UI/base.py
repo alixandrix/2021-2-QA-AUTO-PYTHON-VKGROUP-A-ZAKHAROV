@@ -1,13 +1,14 @@
 import os
+from contextlib import contextmanager
+
 import allure
 import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support.wait import WebDriverWait
 
 from pages.base_page import BasePage
+from pages.login_page import LoginPage
 from utils.creator import Builder
-from pages.main_page import MainPage
 CLICK_RETRY = 3
 
 
@@ -40,17 +41,28 @@ class BaseCase:
         self.logger = logger
         self.builder = Builder()
         self.base_page = BasePage(driver)
+        self.login_page = LoginPage(driver)
         if self.authorize:
-            cookies = request.getfixturevalue('cookies')
+            data = request.getfixturevalue('cookies')
+            cookies = data[0]
+            self.user = data[1]
+            self.password = data[2]
             for cookie in cookies:
-                print(cookie)
                 self.driver.add_cookie({'name': cookie['name'], 'value': cookie['value']})
             self.driver.refresh()
             self.main_page = request.getfixturevalue('main_page')
         self.logger.info('Initial setup completed')
 
-
-
+    @contextmanager
+    def switch_to_next_windows(self, current, close=False):
+        for w in self.driver.window_handles:
+            if w != current:
+                self.driver.switch_to.window(w)
+                break
+        yield
+        if close:
+            self.driver.close()
+        self.driver.switch_to.window(current)
 
         
 

@@ -11,8 +11,7 @@ def config():
     browser = 'chrome'
     url = 'http://myapp_proxy:8070/'
     selenoid = 'http://127.0.0.1:4444/wd/hub'
-    vnc = True
-    return {'browser': browser, 'url': url, 'selenoid': selenoid, 'vnc': vnc}
+    return {'browser': browser, 'url': url, 'selenoid': selenoid}
 
 
 @pytest.fixture(scope='function')

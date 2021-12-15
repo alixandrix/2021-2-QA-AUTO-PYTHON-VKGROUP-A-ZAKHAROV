@@ -1,12 +1,15 @@
+import allure
 import pytest
 
 from base import BaseCase
+from locators import basic_locators
 from utils.creator import Builder
-
+from fixtures import main_page
 
 class TestPositiveAuth(BaseCase):
     authorize = False
 
+    @allure.feature('UI tests')
     def test_positive_auth(self, client_mysql):
         username = self.builder.username(username_length=10)
         password = self.builder.password(password_length=10)
@@ -24,6 +27,7 @@ class TestPositiveAuth(BaseCase):
         assert time is None  # bug
         assert user
 
+    @allure.feature('UI tests')
     @pytest.mark.parametrize(
         'username',
         [
@@ -44,6 +48,7 @@ class TestPositiveAuth(BaseCase):
         client_mysql.delete_user(username)
         assert user
 
+    @allure.feature('UI tests')
     def test_positive_username_spaces(self, client_mysql):
         username = 7 * " " + self.builder.username(username_length=3)
         password = self.builder.password(password_length=8)
@@ -58,6 +63,7 @@ class TestPositiveAuth(BaseCase):
         client_mysql.delete_user(username)
         assert user
 
+    @allure.feature('UI tests')
     @pytest.mark.parametrize(
         'password',
         [
@@ -78,6 +84,7 @@ class TestPositiveAuth(BaseCase):
         client_mysql.delete_user(username)
         assert user
 
+    @allure.feature('UI tests')
     @pytest.mark.parametrize(
         'email',
         [
@@ -99,10 +106,10 @@ class TestPositiveAuth(BaseCase):
         assert user
 
 
-
 class TestNegativeAuth(BaseCase):
     authorize = False
 
+    @allure.feature('UI tests')
     def test_negative_one_empty_auth(self, client_mysql):
         auth_page = self.base_page.switch()
         for i in range(3):
@@ -123,6 +130,7 @@ class TestNegativeAuth(BaseCase):
             assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
             assert client_mysql.get_data(username) is None
 
+    @allure.feature('UI tests')
     def test_negative_one_full_auth(self, client_mysql):
         auth_page = self.base_page.switch()
         for i in range(3):
@@ -225,14 +233,81 @@ class TestPositiveMain(BaseCase):
         self.main_page.click(self.main_page.locators.LOGOUT_LOCATOR)
         assert self.main_page.find(self.base_page.locators.LOGIN_LOCATOR)
 
-    def test_positive_vk(self, fast_registration):
+    def test_positive_vk(self):
         self.logger.info(f"Check VK_ID")
-        main_p = fast_registration
-        main_p.driver.refresh()
-        assert main_p.find(main_p.locators.VK_ID_LOCATOR)
+        self.main_page.driver.refresh()
+        assert self.main_page.find(self.main_page.locators.VK_ID_LOCATOR)
 
-    def test_positive_body(self, fast_registration):
-        self.logger.info(f"Testing body content")
+    @pytest.mark.parametrize(
+        'locator, expected_name',
+        [
+            (basic_locators.MainPageLocators.API_LOCATOR, 'API'),
+            (basic_locators.MainPageLocators.INTERNET_FUTURE_LOCATOR, 'future'),
+            (basic_locators.MainPageLocators.SMTP_LOCATOR, 'SMTP')
+        ]
+    )
+    def test_positive_body(self, locator, expected_name):
+        self.logger.info(f"Testing body content API")
+        current_window = self.driver.current_window_handle
+        self.main_page.click_new_window(locator)
+        with self.switch_to_next_windows(current_window, close=True):
+            assert expected_name in self.driver.current_url
+
+    def test_positive_navbar_python(self):
+        self.logger.info(f"Testing navbar clicking on Python")
+        current_window = self.driver.current_window_handle
+        self.main_page.click_new_window(self.main_page.locators.PYTHON_LOCATOR)
+        with self.switch_to_next_windows(current_window, close=True):
+            assert 'python' in self.driver.current_url                          # другие элементы навбара не кликаются при развертывании списка
+
+    @pytest.mark.parametrize(
+        'locator_navbar, locator, expected_name',
+        [
+            (basic_locators.MainPageLocators.PYTHON_LOCATOR, basic_locators.MainPageLocators.PYTHON_HISTORY_LOCATOR,
+             ['history']),
+            (basic_locators.MainPageLocators.PYTHON_LOCATOR, basic_locators.MainPageLocators.FLASK_LOCATOR,
+             ['flask']),
+            (basic_locators.MainPageLocators.NETWORK_LOCATOR, basic_locators.MainPageLocators.WIRESHARK_NEWS_LOCATORS,
+             ['news', 'wireshark']),
+            (basic_locators.MainPageLocators.NETWORK_LOCATOR,
+             basic_locators.MainPageLocators.WIRESHARK_DOWNLOAD_LOCATORS, ['download', 'wireshark']),
+            (basic_locators.MainPageLocators.NETWORK_LOCATOR,
+             basic_locators.MainPageLocators.TCPDUMP_LOCATOR, ['tcpdump-examples'])
+
+        ]
+    )
+    def test_positive_navbar(self, locator_navbar, locator, expected_name):
+        self.logger.info(f"Testing navbar clicking on Centos, but Fedora is opening")
+        current_window = self.driver.current_window_handle
+        self.main_page.click_navbar(locator_navbar,
+                                    locator)
+        with self.switch_to_next_windows(current_window, close=True):
+            if len(expected_name) > 1:
+                assert expected_name[0] in (self.driver.current_url).lower() and expected_name[1] in (self.driver.current_url).lower()
+            else:
+                assert expected_name[0] in (self.driver.current_url).lower()
+
+    def test_positive_centos(self):
+        self.logger.info(f"Testing navbar clicking on Centos, but Fedora is opening")
+        current_window = self.driver.current_window_handle
+        self.main_page.click_navbar(self.main_page.locators.LINUX_LOCATOR, self.main_page.locators.DOWNLOAD_CENTOS_LOCATOR)
+        with self.switch_to_next_windows(current_window, close=True):
+            assert 'fedora' in self.driver.current_url    # fedora != centos
+
+
+class TestPositiveLoginPage(BaseCase):
+    authorize = False
+    #впихнуть еще 1 флаг на логин в бэйс
+
+    def test_positive_login(self):
+        self.logger.info(f"Testing login page")
+        self.login_page.login(self.user, self.password)
+        assert self.driver.current_url == self.main_page.url
+
+
+
+
+
 #login_page: make test email:password
 
 
