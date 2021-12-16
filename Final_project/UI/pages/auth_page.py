@@ -1,9 +1,9 @@
 import allure
 from selenium.common.exceptions import TimeoutException
-from pages.base_page import BasePage
-from pages.main_page import MainPage
-from locators.basic_locators import AuthPageLocators, MainPageLocators
-
+from UI.pages.base_page import BasePage
+from UI.pages.main_page import MainPage
+from UI.locators.basic_locators import AuthPageLocators, MainPageLocators
+from UI.utils.exceptions import ErrorAuthException
 
 class AuthPage(BasePage):
     url = 'http://myapp_proxy:8070/reg'
@@ -38,7 +38,7 @@ class AuthPage(BasePage):
             return MainPage(self.driver)
         except TimeoutException:
             print("/rError in registration!")
-            return AuthPage(self.driver)
+            raise ErrorAuthException
 
 
 

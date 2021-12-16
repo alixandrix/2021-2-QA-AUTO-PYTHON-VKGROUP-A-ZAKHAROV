@@ -1,22 +1,17 @@
 import logging
 import time
-from contextlib import contextmanager
 import allure
 from selenium.webdriver import ActionChains
-
-from locators import basic_locators
+from UI.locators import basic_locators
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.keys import Keys
+from UI.utils.exceptions import PageNotLoadedException
 
 
 CLICK_RETRY = 3
 BASE_TIMEOUT = 12
 
-
-class PageNotLoadedException(Exception):
-    pass
 
 
 class BasePage(object):

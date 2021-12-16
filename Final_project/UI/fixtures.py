@@ -4,8 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from utils.creator import Builder
 from utils.client import TesterClient
-from pages.base_page import BasePage
-from pages.login_page import LoginPage
+from UI.pages.base_page import BasePage
 from selenium.webdriver.remote.webdriver import WebDriver
 
 

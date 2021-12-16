@@ -4,9 +4,9 @@ import allure
 import pytest
 
 from base import BaseCase
-from locators import basic_locators
+from UI.locators import basic_locators
 from utils.creator import Builder
-from pages.login_page import ErrorLoginException
+from UI.pages.login_page import ErrorLoginException
 
 class TestPositiveAuth(BaseCase):
     authorize = False
@@ -25,8 +25,8 @@ class TestPositiveAuth(BaseCase):
         active = client_mysql.get_data(username=username).active
         time = client_mysql.get_data(username=username).start_active_time
         client_mysql.delete_user(username)
-        assert active == 0  # bug
-        assert time is None  # bug
+        assert active == 1  # bug
+        assert time is not None  # bug
         assert user
 
     @allure.feature('UI tests')
@@ -107,6 +107,21 @@ class TestPositiveAuth(BaseCase):
         client_mysql.delete_user(username)
         assert user
 
+class TestTwoEmails(BaseCase):
+    need_login = False
+
+    def test_negative_two_emails(self, client_mysql):
+        username = self.builder.username()
+        password = self.builder.password()
+        email = self.email
+        self.logger.info(f"Auth with {username} , {password}, {email} which was registered yet")
+        reg_page = self.base_page.switch()
+        with pytest.raises(ErrorLoginException):
+            reg_page.register(username, password, email)
+            assert self.driver.current_url != reg_page.url
+            user = client_mysql.get_data(username=username).username
+            client_mysql.delete_user(username)
+            assert user #500 response
 
 class TestNegativeAuth(BaseCase):
     authorize = False
@@ -294,7 +309,7 @@ class TestPositiveMain(BaseCase):
         current_window = self.driver.current_window_handle
         self.main_page.click_navbar(self.main_page.locators.LINUX_LOCATOR, self.main_page.locators.DOWNLOAD_CENTOS_LOCATOR)
         with self.switch_to_next_windows(current_window, close=True):
-            assert 'fedora' in self.driver.current_url    # fedora != centos
+            assert 'centos' in self.driver.current_url  and 'centos' in self.driver.page_source  # fedora != centos
 
 
 class TestPositiveLoginPage(BaseCase):
@@ -316,7 +331,8 @@ class TestPositiveLoginPage(BaseCase):
         self.driver.back()
         self.login_page.find(self.login_page.locators.LOGIN_LOCATOR)
         main_p = self.login_page.login((self.user+10*' '), self.password)
-        assert self.driver.current_url == 'http://myapp_proxy:8070/welcome/' and main_p.find(main_p.locators.INCORRECT_LENGTH_LOCATOR) #bug
+        assert self.driver.current_url != 'http://myapp_proxy:8070/welcome/'
+        assert main_p.find(main_p.locators.INCORRECT_LENGTH_LOCATOR) #bug
 
     @pytest.mark.parametrize(
         'username, password',
@@ -330,7 +346,6 @@ class TestPositiveLoginPage(BaseCase):
         with pytest.raises(ErrorLoginException):
             self.login_page.login(username, password)
             assert self.driver.current_url == self.login_page.url and 'Please fill out this field' in self.driver.page_source
-
 
 
 class TestNegativeLoginPage(BaseCase):
@@ -366,7 +381,14 @@ class TestNegativeLoginPage(BaseCase):
             self.login_page.login(' ' + self.user, self.password)
             assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
 
-# мб 1 верное поле 2 не верное
+
+class TestSpecial(BaseCase):
+
+    def test_active(self, client_mysql):
+        self.login_page.login(self.user, self.password)
+        self.driver.close()
+        active = client_mysql.get_data(username=self.user).active
+        assert active == 0
 
 
 
@@ -374,7 +396,7 @@ class TestNegativeLoginPage(BaseCase):
 
 
 
-#login_page: make test email:password
+
 
 
 

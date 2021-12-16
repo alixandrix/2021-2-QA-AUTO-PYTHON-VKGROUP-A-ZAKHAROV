@@ -27,7 +27,7 @@ services:
     tty: true
     entrypoint: /app/myapp --config=/tmp/conf
     volumes:
-      - ${PWD}/conf:/tmp/conf
+      - ${PWD}/confs/conf:/tmp/conf
     links:
       - percona
       - mock
@@ -75,7 +75,7 @@ services:
     networks:
       - my_network
     volumes:
-      - ${PWD}/default.conf:/etc/nginx/conf.d/default.conf
+      - ${PWD}/confs/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       myapp:
         condition: service_started

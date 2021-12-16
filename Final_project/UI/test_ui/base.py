@@ -6,8 +6,8 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from pages.base_page import BasePage
-from pages.login_page import LoginPage
+from UI.pages.base_page import BasePage
+from UI.pages.login_page import LoginPage
 from utils.creator import Builder
 CLICK_RETRY = 3
 
