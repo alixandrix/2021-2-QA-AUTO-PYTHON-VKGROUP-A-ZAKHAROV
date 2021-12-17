@@ -12,7 +12,8 @@ class ApiClient:
     def __init__(self, base_url):
         self.base_url = base_url
         self.term = 'y'
-        self.submit = 'Register'
+        self.submit_reg = 'Register'
+        self.submit_login = 'Login'
         self.cookie = None
         self.session = requests.Session()
 

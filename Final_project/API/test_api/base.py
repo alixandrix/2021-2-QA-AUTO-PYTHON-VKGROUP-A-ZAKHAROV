@@ -5,8 +5,7 @@ from utils.creator import Builder
 
 class ApiBase:
     authorize = True
-    publish = True
-    blog_id = 378
+
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(self, api_client_front, api_client_back, logger):
@@ -14,8 +13,11 @@ class ApiBase:
         self.api_client_back = api_client_back
         self.builder = Builder()
         self.logger = logger
-
         if self.authorize:
-            self.api_client_front.post_login()
+            self.user = self.builder.username()
+            self.email = self.builder.email()
+            self.password = self.builder.password()
+            self.api_client_front.post_auth(self.user, self.email, self.password)
+        self.logger.info('Initial setup completed')
 
 
