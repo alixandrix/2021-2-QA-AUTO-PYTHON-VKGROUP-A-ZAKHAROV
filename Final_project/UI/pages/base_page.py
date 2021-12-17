@@ -73,7 +73,7 @@ class BasePage(object):
     def switch(self):
         self.find(self.locators.CREATE_ACCOUNT, timeout=1)
         self.click(self.locators.CREATE_ACCOUNT)
-        from pages.auth_page import AuthPage
+        from UI.pages.auth_page import AuthPage
         return AuthPage(self.driver)
 
 

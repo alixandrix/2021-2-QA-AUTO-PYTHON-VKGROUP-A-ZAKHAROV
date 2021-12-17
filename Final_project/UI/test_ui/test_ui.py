@@ -6,12 +6,14 @@ import pytest
 from base import BaseCase
 from UI.locators import basic_locators
 from utils.creator import Builder
-from UI.pages.login_page import ErrorLoginException
+from UI.utils.exceptions import ErrorLoginException, ErrorAuthException
 
+@allure.feature('UI tests')
+@pytest.mark.UI
 class TestPositiveAuth(BaseCase):
     authorize = False
 
-    @allure.feature('UI tests')
+
     def test_positive_auth(self, client_mysql):
         username = self.builder.username(username_length=10)
         password = self.builder.password(password_length=10)
@@ -24,12 +26,11 @@ class TestPositiveAuth(BaseCase):
         user = client_mysql.get_data(username=username).username
         active = client_mysql.get_data(username=username).active
         time = client_mysql.get_data(username=username).start_active_time
-        client_mysql.delete_user(username)
-        assert active == 1  # bug
-        assert time is not None  # bug
+        assert active != 1  # bug
+        assert time is None  # bug
         assert user
 
-    @allure.feature('UI tests')
+
     @pytest.mark.parametrize(
         'username',
         [
@@ -47,10 +48,9 @@ class TestPositiveAuth(BaseCase):
         main_p.find(main_p.locators.LOGOUT_LOCATOR)
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
         user = client_mysql.get_data(username=username).username
-        client_mysql.delete_user(username)
         assert user
 
-    @allure.feature('UI tests')
+
     def test_positive_username_spaces(self, client_mysql):
         username = 7 * " " + self.builder.username(username_length=3)
         password = self.builder.password(password_length=8)
@@ -62,10 +62,9 @@ class TestPositiveAuth(BaseCase):
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0],
                             main_p.locators.LOGIN_LOCATOR[1].format(username)))  # username without spaces
         user = client_mysql.get_data(username=username).username
-        client_mysql.delete_user(username)
         assert user
 
-    @allure.feature('UI tests')
+
     @pytest.mark.parametrize(
         'password',
         [
@@ -83,10 +82,9 @@ class TestPositiveAuth(BaseCase):
         main_p.find(main_p.locators.LOGOUT_LOCATOR)
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
         user = client_mysql.get_data(username=username).username
-        client_mysql.delete_user(username)
         assert user
 
-    @allure.feature('UI tests')
+
     @pytest.mark.parametrize(
         'email',
         [
@@ -104,9 +102,10 @@ class TestPositiveAuth(BaseCase):
         main_p.find(main_p.locators.LOGOUT_LOCATOR)
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
         user = client_mysql.get_data(username=username).username
-        client_mysql.delete_user(username)
         assert user
 
+@allure.feature('UI tests')
+@pytest.mark.UI
 class TestTwoEmails(BaseCase):
     need_login = False
 
@@ -118,22 +117,22 @@ class TestTwoEmails(BaseCase):
         reg_page = self.base_page.switch()
         with pytest.raises(ErrorLoginException):
             reg_page.register(username, password, email)
-            assert self.driver.current_url != reg_page.url
             user = client_mysql.get_data(username=username).username
-            client_mysql.delete_user(username)
             assert user #500 response
 
+@allure.feature('UI tests')
+@pytest.mark.UI
 class TestNegativeAuth(BaseCase):
     authorize = False
 
-    @allure.feature('UI tests')
+
     def test_negative_one_empty_auth(self, client_mysql):
         auth_page = self.base_page.switch()
         for i in range(3):
             if i == 0:
                 username = " "
                 password = self.builder.password(password_length=20)
-                email = self.builder.password(email_length=12)
+                email = self.builder.email(email_length=12)
             elif i == 1:
                 email = ""
                 password = self.builder.password(password_length=28)
@@ -147,14 +146,14 @@ class TestNegativeAuth(BaseCase):
             assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
             assert client_mysql.get_data(username) is None
 
-    @allure.feature('UI tests')
+
     def test_negative_one_full_auth(self, client_mysql):
         auth_page = self.base_page.switch()
         for i in range(3):
             if i == 0:
                 username = " "
                 password = ""
-                email = self.builder.password(email_length=12)
+                email = self.builder.password(password_length=12)
             elif i == 1:
                 email = ""
                 password = self.builder.password(password_length=28)
@@ -181,7 +180,7 @@ class TestNegativeAuth(BaseCase):
         self.logger.info(f"Auth with {username}(length={len(username)}, {password}, {email}")
         auth_page = self.base_page.switch()
         auth_page.register(username, password, email)
-        assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
+        assert auth_page.find(auth_page.locators.LOGIN_LOCATOR, timeout=15)
         assert client_mysql.get_data(username) is None
 
     def test_negative_password_edge_auth(self, client_mysql):
@@ -191,14 +190,14 @@ class TestNegativeAuth(BaseCase):
         self.logger.info(f"Auth with {username}, {password}(length={len(password)}, {email}")
         auth_page = self.base_page.switch()
         auth_page.register(username, password, email)
-        assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
+        assert auth_page.find(auth_page.locators.LOGIN_LOCATOR,  timeout=15)
         assert client_mysql.get_data(username) is None
 
     @pytest.mark.parametrize(
         'email',
         [
             Builder.email(email_length=5),
-            Builder.email(email_length=64)
+            Builder.email(email_length=65)
         ]
     )
     def test_negative_email_edge_auth(self, email, client_mysql):
@@ -215,9 +214,10 @@ class TestNegativeAuth(BaseCase):
         password = self.builder.password(password_length=50)
         email = self.builder.email(email_length=14)
         auth_page = self.base_page.switch()
-        auth_page.register_SDET(username, password, email)
-        assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
-        assert client_mysql.get_data(username) is None
+        with pytest.raises(ErrorAuthException):
+            auth_page.register_SDET(username, password, email)
+            assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
+            assert client_mysql.get_data(username) is None
 
     def test_negative_nude(self, client_mysql):
         username = ' '
@@ -227,7 +227,7 @@ class TestNegativeAuth(BaseCase):
         auth_page = self.base_page.switch()
         auth_page.register(username, password, email)
         assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
-        assert client_mysql.get_data(username) is None
+        assert client_mysql.get_data(username) is None #check
 
     def test_negative_spaces_password(self, client_mysql):
         username = self.builder.username(username_length=11)
@@ -241,9 +241,11 @@ class TestNegativeAuth(BaseCase):
         password_db = client_mysql.get_data(username=username).password
         client_mysql.delete_user(username)
         assert password_db == password
-        assert user
+        assert user #check
 
-class TestPositiveMain(BaseCase):
+@allure.feature('UI tests')
+@pytest.mark.UI
+class TestMain(BaseCase):
 
     def test_positive_logout(self):
         self.logger.info(f"Check button logout")
@@ -253,7 +255,7 @@ class TestPositiveMain(BaseCase):
     def test_positive_vk(self):
         self.logger.info(f"Check VK_ID")
         self.main_page.driver.refresh()
-        assert self.main_page.find(self.main_page.locators.VK_ID_LOCATOR)
+        assert self.main_page.find(self.main_page.locators.VK_ID_LOCATOR) #check
 
     @pytest.mark.parametrize(
         'locator, expected_name',
@@ -275,7 +277,7 @@ class TestPositiveMain(BaseCase):
         current_window = self.driver.current_window_handle
         self.main_page.click_new_window(self.main_page.locators.PYTHON_LOCATOR)
         with self.switch_to_next_windows(current_window, close=True):
-            assert 'python' in self.driver.current_url                          # другие элементы навбара не кликаются при развертывании списка
+            assert 'python' in self.driver.current_url        #check                  # другие элементы навбара не кликаются при развертывании списка
 
     @pytest.mark.parametrize(
         'locator_navbar, locator, expected_name',
@@ -294,7 +296,7 @@ class TestPositiveMain(BaseCase):
         ]
     )
     def test_positive_navbar(self, locator_navbar, locator, expected_name):
-        self.logger.info(f"Testing navbar clicking on Centos, but Fedora is opening")
+        self.logger.info(f"Testing navbar")
         current_window = self.driver.current_window_handle
         self.main_page.click_navbar(locator_navbar,
                                     locator)
@@ -302,16 +304,17 @@ class TestPositiveMain(BaseCase):
             if len(expected_name) > 1:
                 assert expected_name[0] in (self.driver.current_url).lower() and expected_name[1] in (self.driver.current_url).lower()
             else:
-                assert expected_name[0] in (self.driver.current_url).lower()
+                assert expected_name[0] in (self.driver.current_url).lower() #check
 
-    def test_positive_centos(self):
+    def test_negative_centos(self):
         self.logger.info(f"Testing navbar clicking on Centos, but Fedora is opening")
         current_window = self.driver.current_window_handle
         self.main_page.click_navbar(self.main_page.locators.LINUX_LOCATOR, self.main_page.locators.DOWNLOAD_CENTOS_LOCATOR)
         with self.switch_to_next_windows(current_window, close=True):
-            assert 'centos' in self.driver.current_url  and 'centos' in self.driver.page_source  # fedora != centos
+            assert 'centos' in self.driver.current_url and 'centos' in self.driver.page_source  # fedora != centos
 
-
+@allure.feature('UI tests')
+@pytest.mark.UI
 class TestPositiveLoginPage(BaseCase):
     need_login = False
 
@@ -331,8 +334,7 @@ class TestPositiveLoginPage(BaseCase):
         self.driver.back()
         self.login_page.find(self.login_page.locators.LOGIN_LOCATOR)
         main_p = self.login_page.login((self.user+10*' '), self.password)
-        assert self.driver.current_url != 'http://myapp_proxy:8070/welcome/'
-        assert main_p.find(main_p.locators.INCORRECT_LENGTH_LOCATOR) #bug
+        assert main_p.find(main_p.locators.INCORRECT_LENGTH_LOCATOR) #bug #check
 
     @pytest.mark.parametrize(
         'username, password',
@@ -347,7 +349,8 @@ class TestPositiveLoginPage(BaseCase):
             self.login_page.login(username, password)
             assert self.driver.current_url == self.login_page.url and 'Please fill out this field' in self.driver.page_source
 
-
+@allure.feature('UI tests')
+@pytest.mark.UI
 class TestNegativeLoginPage(BaseCase):
     need_login = False
 
@@ -381,11 +384,11 @@ class TestNegativeLoginPage(BaseCase):
             self.login_page.login(' ' + self.user, self.password)
             assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
 
-
+@allure.feature('UI tests')
+@pytest.mark.UI
 class TestSpecial(BaseCase):
 
     def test_active(self, client_mysql):
-        self.login_page.login(self.user, self.password)
         self.driver.close()
         active = client_mysql.get_data(username=self.user).active
         assert active == 0

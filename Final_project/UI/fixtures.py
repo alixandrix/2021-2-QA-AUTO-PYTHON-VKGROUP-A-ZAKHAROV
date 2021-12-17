@@ -22,7 +22,7 @@ def client_mysql():
 
 @pytest.fixture
 def main_page(driver):
-    from pages.main_page import MainPage
+    from UI.pages.main_page import MainPage
     return MainPage(driver=driver)
 
 def get_driver(config):

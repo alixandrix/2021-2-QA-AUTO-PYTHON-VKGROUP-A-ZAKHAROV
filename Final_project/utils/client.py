@@ -31,8 +31,6 @@ class TesterClient:
         resp = self.session.query(App_tb).filter_by(username=username).first()
         return resp
 
-
-
     def delete_user(self, username):
         self.session.commit()
         self.session.query(App_tb).filter_by(username=username).delete()

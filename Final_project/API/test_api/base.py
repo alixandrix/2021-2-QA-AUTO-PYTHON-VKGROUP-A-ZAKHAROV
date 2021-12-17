@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from utils.creator import Builder
@@ -17,7 +18,8 @@ class ApiBase:
             self.user = self.builder.username()
             self.email = self.builder.email()
             self.password = self.builder.password()
-            self.api_client_front.post_auth(self.user, self.email, self.password)
+            with allure.step("Registration with username, password, email"):
+                self.api_client_front.post_auth(self.user, self.email, self.password)
         self.logger.info('Initial setup completed')
 
 

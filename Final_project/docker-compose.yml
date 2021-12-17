@@ -65,7 +65,7 @@ services:
     volumes:
       - ~/.aerokube/selenoid:/etc/selenoid
       - /var/run/docker.sock:/var/run/docker.sock
-    command: ["-container-network", "my_network", "-conf", "/etc/selenoid/browsers.json"]
+    command: ["-container-network", "my_network", "-conf", "/etc/selenoid/browsers.json", "-timeout", "3m"]
     ports:
       - 4444:4444
 
