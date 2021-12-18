@@ -22,6 +22,8 @@ class ApiClientFront(ApiClient):
         }
         self._request('POST', urljoin(self.base_url, location), headers=self.post_headers, data=data)
         self.cookies = self.session.cookies.get('session')
+        return self.cookies
+
 
     @allure.step("Login with {user}, {password}(front api)")
     def post_login(self, user, password):
@@ -38,11 +40,8 @@ class ApiClientFront(ApiClient):
 
     @allure.step(f"Logout(front api)")
     def get_logout(self):
-        headers = {
-            'Cookie': self.cookies
-        }
         location = 'logout'
-        self._request('GET', urljoin(self.base_url, location), headers=headers)
+        self._request('GET', urljoin(self.base_url, location), headers=self.headers)
 
 
 

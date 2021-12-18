@@ -1,5 +1,7 @@
 import logging
 from urllib.parse import urljoin
+
+import allure
 import requests
 from API.exceptions import *
 
@@ -14,13 +16,13 @@ class ApiClient:
         self.term = 'y'
         self.submit_reg = 'Register'
         self.submit_login = 'Login'
-        self.cookie = None
+        self.cookies = None
         self.session = requests.Session()
 
     @property
     def headers(self):
         return {
-            'Cookie': self.session.cookies.get('Cookie')
+            'Cookie': self.cookies
         }
 
     @staticmethod
@@ -36,7 +38,7 @@ class ApiClient:
     @staticmethod
     def log_post(response):
         log_str = 'Got response:\n' \
-                  'RESPONSE STATUS: {response.status_code}'
+                  f'RESPONSE STATUS: {response.status_code}'
 
         if len(response.text) > MAX_RESPONSE_LENGTH:
             if logger.level == logging.INFO:
@@ -54,6 +56,7 @@ class ApiClient:
                         f'RESPONSE CONTENT: {response.text}\n\n'
                         )
 
+    @allure.step("Sending {method} request with headers:{headers}, data: {data}, json: {json} expected status = {expected_status}")
     def _request(self, method, url, headers=None, data=None, expected_status=200, jsonify=False, json=None, files=None):
         self.log_pre(url, headers, data, expected_status, json, files)
         response = self.session.request(method, url, headers=headers, data=data, json=json, files=files)
@@ -65,26 +68,3 @@ class ApiClient:
             return json_response
 
         return response
-
-
-    """def post_segment_create(self, name_segment):
-        json = post_segment_create_json(name_segment)
-        res = self._request('POST', urljoin(self.base_url, 'api/v2/remarketing/segments.json?fields=id,name'),
-                            headers=self.headers, json=json, jsonify=True)
-        return res['id']
-
-    def get_segment_id(self, name_segment):
-        resp = self._request('GET', urljoin(self.base_url, 'api/v2/remarketing/segments.json'), jsonify=True)
-        for i in resp['items']:
-            if i['name'] == name_segment:
-                return i['id']
-
-    def delete_segment_id(self, id_segment):
-       return self._request('DELETE', urljoin(self.base_url, f'api/v2/remarketing/segments/{id_segment}.json'),
-                             headers=self.headers, expected_status=204)
-
-    def get_id_url(self, name_url):
-        resp = self._request('GET', urljoin(self.base_url, f'api/v1/urls/?url=http%3A%2F%2F{name_url}%2F'),
-                             jsonify=True)
-        return resp['id']
-"""

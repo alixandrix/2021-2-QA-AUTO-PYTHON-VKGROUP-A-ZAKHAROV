@@ -13,7 +13,6 @@ from UI.utils.exceptions import ErrorLoginException, ErrorAuthException
 class TestPositiveAuth(BaseCase):
     authorize = False
 
-
     def test_positive_auth(self, client_mysql):
         username = self.builder.username(username_length=10)
         password = self.builder.password(password_length=10)
@@ -26,6 +25,7 @@ class TestPositiveAuth(BaseCase):
         user = client_mysql.get_data(username=username).username
         active = client_mysql.get_data(username=username).active
         time = client_mysql.get_data(username=username).start_active_time
+        client_mysql.delete_user(username)
         assert active == 1  # bug
         assert time is not None  # bug
         assert user
@@ -48,6 +48,7 @@ class TestPositiveAuth(BaseCase):
         main_p.find(main_p.locators.LOGOUT_LOCATOR)
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
         user = client_mysql.get_data(username=username).username
+        client_mysql.delete_user(username)
         assert user
 
 
@@ -62,6 +63,7 @@ class TestPositiveAuth(BaseCase):
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0],
                             main_p.locators.LOGIN_LOCATOR[1].format(username)))  # username without spaces
         user = client_mysql.get_data(username=username).username
+        client_mysql.delete_user(username)
         assert user
 
 
@@ -82,6 +84,7 @@ class TestPositiveAuth(BaseCase):
         main_p.find(main_p.locators.LOGOUT_LOCATOR)
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
         user = client_mysql.get_data(username=username).username
+        client_mysql.delete_user(username)
         assert user
 
 
@@ -117,7 +120,7 @@ class TestTwoEmails(BaseCase):
         reg_page = self.base_page.switch()
         with pytest.raises(ErrorLoginException):
             reg_page.register(username, password, email)
-            user = client_mysql.get_data(username=username).username
+            user = client_mysql.get_data(username=username)
             assert user #500 response
 
 @allure.feature('UI tests')
@@ -214,6 +217,7 @@ class TestNegativeAuth(BaseCase):
         assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
         user = client_mysql.get_data(username=username).username
         password_db = client_mysql.get_data(username=username).password
+        client_mysql.delete_user(username)
         assert password_db == password
         assert user
 
@@ -280,7 +284,7 @@ class TestMain(BaseCase):
             else:
                 assert expected_name[0] in (self.driver.current_url).lower()
 
-    def test_negative_centos(self):
+    def test_positive_centos(self):
         self.logger.info(f"Testing navbar clicking on Centos, but Fedora is opening")
         current_window = self.driver.current_window_handle
         self.main_page.click_navbar(self.main_page.locators.LINUX_LOCATOR, self.main_page.locators.DOWNLOAD_CENTOS_LOCATOR)
