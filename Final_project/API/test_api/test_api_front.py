@@ -28,7 +28,7 @@ class TestApiAuth(ApiBase):
         user = client_mysql.get_data(username=username).username
         assert user
 
-    def test_invalid_auth_time(self, client_mysql):
+    def test_valid_auth_time(self, client_mysql):
         username = self.builder.username()
         email = self.builder.email()
         password = self.builder.password()
@@ -51,10 +51,12 @@ class TestApiAuth(ApiBase):
         ]
     )
     def test_invalid_auth_spaces(self, client_mysql, username, email, password):
-        self.logger.info(f"Auth with {username}, {password}, {email}")
-        self.api_client_front.post_auth(username, email, password)
-        user = client_mysql.get_data(username=username).username
-        assert user is None #password max 255, but 256 was given
+        self.logger.info(f"Auth with {username} length of username = {len(username)}, {password}length of password = {len(password)}"
+                         f", {email} length of email = {len(email)}")
+        with pytest.raises(ResponseStatusCodeException):
+            self.api_client_front.post_auth(username, email, password)
+            user = client_mysql.get_data(username=username).username
+            assert user is None #password max 255, but 256 was given
 
     @pytest.mark.parametrize(
         'username, email, password',
@@ -75,7 +77,7 @@ class TestApiAuth(ApiBase):
             user = client_mysql.get_data(username=username).username
             assert user is None # 500 not ok password
 
-    def test_invalid_auth_and_logout(self, client_mysql):
+    def test_valid_auth_and_logout(self, client_mysql):
         username = self.builder.username()
         email = self.builder.email()
         password = self.builder.password()
@@ -113,14 +115,14 @@ class TestApiLogin(ApiBase):
 
     def test_invalid_login_email(self, client_mysql):
         self.logger.info(f"Login with {self.email}, {self.password}")
-        self.api_client_front.post_login(self.email, self.password)
-        active = client_mysql.get_data(username=self.user).active
-        assert active == 0 #enter with space
+        self.api_client_front.get_logout()
+        resp = self.api_client_front.post_login(self.email, self.password)
+        assert resp.status_code != 200
 
     def test_invalid_login(self, client_mysql):
         username = self.builder.username()
         password = self.builder.password()
-        self.logger.info(f"Invalid login with {username}, {password}")
+        self.logger.info(f"Invalid login with random {username} and {password}")
         with pytest.raises(ResponseStatusCodeException):
             self.api_client_front.post_login(username, password)
             user = client_mysql.get_data(username=self.user).username
@@ -131,7 +133,7 @@ class TestApiLogin(ApiBase):
 @pytest.mark.API
 class TestApiLogout(ApiBase):
 
-    def test_invalid_login_and_logout(self, client_mysql):
+    def test_valid_login_and_logout(self, client_mysql):
         self.logger.info(f"Login with {self.user}, {self.password} and then logout")
         self.api_client_front.post_login(self.user, self.password)
         self.api_client_front.get_logout()

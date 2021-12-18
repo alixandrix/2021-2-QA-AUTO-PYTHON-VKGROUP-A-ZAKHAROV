@@ -32,7 +32,9 @@ class ApiClientFront(ApiClient):
             'submit': self.submit_login
         }
 
-        self._request('POST', urljoin(self.base_url, location), headers=self.post_headers, data=data)
+        resp = self._request('POST', urljoin(self.base_url, location), headers=self.post_headers, data=data)
+        return resp
+
 
     @allure.step(f"Logout(front api)")
     def get_logout(self):

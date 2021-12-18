@@ -12,7 +12,8 @@ class MainPage(BasePage):
 
     @allure.step('Clicking and open in new window')
     def click_new_window(self, locator):
-        self.action_chains.key_down(Keys.COMMAND).click(locator).key_up(Keys.COMMAND).perform()
+        python_button = self.find(locator)
+        self.action_chains.key_down(Keys.COMMAND).click(python_button).key_up(Keys.COMMAND).perform()
 
     @allure.step('Clicking on elements in navbar')
     def click_navbar(self, locator_nav, locator):
