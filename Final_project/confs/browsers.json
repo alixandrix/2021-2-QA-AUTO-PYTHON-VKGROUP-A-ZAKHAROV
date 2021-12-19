@@ -1,0 +1,13 @@
+{
+    "chrome": {
+        "default": "96.0",
+        "versions": {
+            "96.0": {
+                "image": "selenoid/chrome:96.0",
+                "port": "4444",
+                "path": "/",
+		"env": ["LANG=ru_RU.UTF-8", "LANGUAGE=ru:en", "LC_ALL=ru_RU.UTF-8"]
+            }
+        }
+    }
+}

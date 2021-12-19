@@ -9,8 +9,6 @@ services:
       MYSQL_ROOT_PASSWORD: pass
     image: "percona:5.7"
     tty: true
-    ports:
-      - 3306:3306
     volumes:
       - ${PWD}/databases/app_db/my_app.sql:/docker-entrypoint-initdb.d/app.sql
       - ${PWD}/databases/mock_db/mock.sql:/docker-entrypoint-initdb.d/mock.sql
@@ -32,8 +30,6 @@ services:
     links:
       - percona
       - mock
-    ports:
-      - 8060:8060
     depends_on:
       mock:
         condition: service_healthy
@@ -50,8 +46,6 @@ services:
       - MOCK_HOST
       - MOCK_PORT
       - MOCK_DB
-    ports:
-      - "${MOCK_PORT}:${MOCK_PORT}"
     healthcheck:
       test: [ "CMD", "curl", "-v", "http://${MOCK_HOST}:${MOCK_PORT}/status" ]
       timeout: 1s
@@ -66,11 +60,10 @@ services:
     networks:
       - my_network
     volumes:
-      - ~/.aerokube/selenoid/browsers.json:/etc/selenoid/browsers.json
+      - ${PWD}/confs/:/etc/selenoid/
       - /var/run/docker.sock:/var/run/docker.sock
-    command: ["-container-network", "my_network", "-conf", "/etc/selenoid/browsers.json", "-timeout", "3m"]
-    ports:
-      - 4444:4444
+    command: ["-container-network",  "${MY_NETWORK}", "-conf", "/etc/selenoid/browsers.json", "-timeout", "5m"]
+
 
   myapp_proxy:
     container_name: myapp_proxy
