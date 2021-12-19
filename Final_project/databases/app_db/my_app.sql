@@ -13,5 +13,5 @@ CREATE TABLE `test_users` (
   UNIQUE KEY `ix_test_users_username` (`username`)
 );
 CREATE USER 'test_qa' IDENTIFIED BY 'qa_test';
-GRANT ALL PRIVILEGES ON * . * TO 'test_qa' WITH MAX_USER_CONNECTIONS 1000;
+GRANT ALL PRIVILEGES ON * . * TO 'test_qa';
 FLUSH PRIVILEGES;

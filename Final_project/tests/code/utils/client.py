@@ -1,6 +1,6 @@
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from UI.utils.models import App_tb
+from UI.code.utils.models import App_tb
 
 
 class TesterClient:

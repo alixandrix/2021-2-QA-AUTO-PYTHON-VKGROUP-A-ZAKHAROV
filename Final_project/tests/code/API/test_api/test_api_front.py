@@ -26,9 +26,10 @@ class TestApiAuth(ApiBase):
         self.logger.info(f"Auth with {username}(length={len(username)}, {password} (length={len(password)}, {email} (length={len(email)}")
         self.api_client_front.post_auth(username, email, password)
         user = client_mysql.get_data(username=username).username
-        client_mysql.delete_user(username)
         assert user
 
+    @allure.description(
+        "Testing auth and checking last active time, shouldn`t equal None")
     def test_valid_auth_time(self, client_mysql):
         username = self.builder.username()
         email = self.builder.email()
@@ -40,6 +41,8 @@ class TestApiAuth(ApiBase):
         assert time is not None #bug
         assert user
 
+    @allure.description(
+        "Testing auth with extra length, when spaces in password, auth successful, but length more than 256")
     @pytest.mark.parametrize(
         'username, email, password',
         [
@@ -57,9 +60,9 @@ class TestApiAuth(ApiBase):
         with pytest.raises(ResponseStatusCodeException):
             self.api_client_front.post_auth(username, email, password)
             user = client_mysql.get_data(username=username).username
-            client_mysql.delete_user(username)
             assert user is None #password max 255, but 256 was given
 
+    @allure.description("Testing password with length 257, response code = 500")
     @pytest.mark.parametrize(
         'username, email, password',
         [
@@ -77,9 +80,9 @@ class TestApiAuth(ApiBase):
                 f"Auth with {username}(length={len(username)}, {password} (length={len(password)}, {email} (length={len(email)}")
             self.api_client_front.post_auth(username, email, password)
             user = client_mysql.get_data(username=username).username
-            client_mysql.delete_user(username)
             assert user is None # 500 not ok password
 
+    @allure.description("Testing auth, then login. Time shouldn`t equal None")
     def test_valid_auth_and_logout(self, client_mysql):
         username = self.builder.username()
         email = self.builder.email()
@@ -92,6 +95,7 @@ class TestApiAuth(ApiBase):
         assert time is not None # bug
         assert user
 
+    @allure.description("Testing auth, then login using password with space in the middle")
     def test_invalid_password_spaces(self, client_mysql):
         username = self.builder.username()
         email = self.builder.email()
@@ -99,8 +103,8 @@ class TestApiAuth(ApiBase):
         self.logger.info(f"Auth with {username}, {password}, {email}")
         self.api_client_front.post_auth(username, email, password)
         self.api_client_front.post_login(username, password)
-        user = client_mysql.get_data(username=username).username
-        assert user #пробелы внутри пароля не хорошо
+        password_db = client_mysql.get_data(username=username).password
+        assert password_db #пробелы внутри пароля не хорошо
 
 @allure.feature('API tests Front')
 @pytest.mark.API
@@ -116,10 +120,16 @@ class TestApiLogin(ApiBase):
         assert active == 1
         assert user
 
+    @allure.description("Testing login using email instead of username")
     def test_invalid_login_email(self, client_mysql):
-        self.logger.info(f"Login with {self.email}, {self.password}")
         self.api_client_front.get_logout()
-        resp = self.api_client_front.post_login(self.email, self.password)
+        username = self.builder.username()
+        password = self.builder.password()
+        email = self.builder.email()
+        self.api_client_front.post_auth(username, email, password)
+        self.logger.info(f"Login with {email}, {password}")
+        self.api_client_front.get_logout()
+        resp = self.api_client_front.post_login(email, password)
         assert resp.status_code != 200 #bug
 
     def test_invalid_login(self, client_mysql):
@@ -136,6 +146,7 @@ class TestApiLogin(ApiBase):
 @pytest.mark.API
 class TestApiLogout(ApiBase):
 
+    @allure.description("Testing login then logout, check active, should equal 0, but 1")
     def test_valid_login_and_logout(self, client_mysql):
         self.logger.info(f"Login with {self.user}, {self.password} and then logout")
         self.api_client_front.post_login(self.user, self.password)

@@ -9,7 +9,7 @@ from utils.creator import Builder
 @pytest.mark.API
 class TestApiAdd(ApiBase):
 
-
+    @allure.description("Add user with doc api, expected status code = 201, but get 210")
     @pytest.mark.parametrize(
         'username, email, password',
         [
@@ -36,6 +36,7 @@ class TestApiAdd(ApiBase):
             assert resp.status_code == 304
             assert user
 
+    @allure.description("Add user with doc api, invalid data, but status code 201, and user add to db")
     @pytest.mark.parametrize(
         'username, email, password',
         [
@@ -48,7 +49,7 @@ class TestApiAdd(ApiBase):
         with pytest.raises(ResponseStatusCodeException):
             resp = self.api_client_back.post_add(username, email, password)
             user = client_mysql.get_data(username=username)
-            assert resp.status_code == 400 #201 expected
+            assert resp.status_code == 400 #201
             assert user is None #bug
 
 
@@ -78,6 +79,7 @@ class TestApiDel(ApiBase):
             assert resp.status_code == 404
             assert user is None
 
+    @allure.description("Add user with doc api then delete, status code = 204, but 200 expected")
     def test_valid_add_delete(self, client_mysql):
         username = self.builder.username()
         email = self.builder.email()
@@ -142,26 +144,40 @@ class TestApiBlock(ApiBase):
 @pytest.mark.API
 class TestApiUnblock(ApiBase):
 
+    @allure.description("Block user then unblock with doc api, but status code 401, 304 expected")
+    def test_valid_add_block_unblock(self, client_mysql):
+        username = self.builder.username()
+        email = self.builder.email()
+        password = self.builder.password()
+        self.api_client_back.post_add(username, email, password)
+        self.api_client_back.get_block(username)
+        with pytest.raises(ResponseStatusCodeException):
+            resp = self.api_client_back.get_unblock(username)
+            access = client_mysql.get_data(username=username).access
+            assert resp.status_code == 200
+            assert access == 1
+
+    @allure.description("Block user then unblock with doc api, but status code 401, 304 expected")
     def test_valid_block_unblock(self, client_mysql):
         self.api_client_back.get_block(self.user)
         with pytest.raises(ResponseStatusCodeException):
             resp = self.api_client_back.get_unblock(self.user)
             access = client_mysql.get_data(username=self.user).access
-            assert resp.status_code == 401 #304 expected
+            assert resp.status_code == 200 #401
             assert access == 1
 
     def test_valid_unblock(self, client_mysql):
         resp = self.api_client_back.get_unblock(self.user)
         access = client_mysql.get_data(username=self.user).access
         assert resp.status_code == 304
-        assert access == 1
+        assert access == 1#
 
     def test_valid_unblock_twice(self, client_mysql):
         self.api_client_back.get_unblock(self.user)
         resp = self.api_client_back.get_unblock(self.user)
         access = client_mysql.get_data(username=self.user).access
         assert resp.status_code == 304
-        assert access == 1
+        assert access == 1#
 
     def test_invalid_unblock(self):
         username = self.builder.username()

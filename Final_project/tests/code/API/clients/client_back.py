@@ -45,7 +45,8 @@ class ApiClientBack(ApiClientFront):
     @allure.step("Unlock user {username} (back api)")
     def get_unblock(self, username):
         location = f'api/accept_user/{username}'
-        resp = self._request('GET', urljoin(self.base_url, location), headers=self.header_cookie, expected_status=304)
+        resp = self._request('GET', urljoin(self.base_url, location), headers=self.header_cookie,  expected_status=304)
+        print(resp.status_code)
         return resp
 
     @allure.step("Status of app(back api)")

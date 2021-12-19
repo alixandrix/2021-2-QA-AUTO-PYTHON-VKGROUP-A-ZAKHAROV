@@ -14,6 +14,7 @@ services:
     volumes:
       - ${PWD}/databases/app_db/my_app.sql:/docker-entrypoint-initdb.d/app.sql
       - ${PWD}/databases/mock_db/mock.sql:/docker-entrypoint-initdb.d/mock.sql
+    command: ["--max-connections", "20000"]
     healthcheck:
       test: [ "CMD", "mysqladmin", "-uroot", "-ppass", "ping", "-h", "percona" ]
       timeout: 1s
@@ -35,6 +36,8 @@ services:
       - 8060:8060
     depends_on:
       mock:
+        condition: service_healthy
+      percona:
         condition: service_healthy
 
   mock:

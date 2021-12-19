@@ -7,5 +7,5 @@ CREATE TABLE `user_vk` (
   UNIQUE KEY `username` (`username`)
 );
 CREATE USER 'test_qa1' IDENTIFIED BY 'qa_test1';
-GRANT ALL PRIVILEGES ON * . * TO 'test_qa1' WITH MAX_USER_CONNECTIONS 1000;
+GRANT ALL PRIVILEGES ON * . * TO 'test_qa1';
 FLUSH PRIVILEGES;

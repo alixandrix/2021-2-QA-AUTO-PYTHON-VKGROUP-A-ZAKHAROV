@@ -4,15 +4,16 @@ import allure
 import pytest
 
 from base import BaseCase
-from UI.locators import basic_locators
+from UI.code.locators import basic_locators
 from utils.creator import Builder
-from UI.utils.exceptions import ErrorLoginException, ErrorAuthException
+from UI.code.utils.exceptions import ErrorLoginException, ErrorAuthException
 
 @allure.feature('UI tests')
 @pytest.mark.UI
 class TestPositiveAuth(BaseCase):
     authorize = False
 
+    @allure.description("Auth with valid data, but active = 0 and start_active_time is Null too")
     def test_positive_auth(self, client_mysql):
         username = self.builder.username(username_length=10)
         password = self.builder.password(password_length=10)
@@ -51,7 +52,7 @@ class TestPositiveAuth(BaseCase):
         client_mysql.delete_user(username)
         assert user
 
-
+    @allure.description("Auth with valid data, but username like '_____smth' shows in main page like 'smth'")
     def test_positive_username_spaces(self, client_mysql):
         username = 7 * " " + self.builder.username(username_length=3)
         password = self.builder.password(password_length=8)
@@ -107,11 +108,25 @@ class TestPositiveAuth(BaseCase):
         user = client_mysql.get_data(username=username).username
         assert user
 
+    def test_positive_spaces_password(self, client_mysql):
+        username = self.builder.username(username_length=11)
+        password = 3*" "+self.builder.password(password_length=5)
+        email = self.builder.email(email_length=11)
+        self.logger.info(f"Auth with {username}, spaces before password {password}, {email}")
+        auth_page = self.base_page.switch()
+        main_p = auth_page.register(username, password, email)
+        assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
+        user = client_mysql.get_data(username=username).username
+        password_db = client_mysql.get_data(username=username).password
+        assert password_db == password
+        assert user
+
 @allure.feature('UI tests')
 @pytest.mark.UI
 class TestTwoEmails(BaseCase):
     need_login = False
 
+    @allure.description("Auth with email used earlier turn back 500 response status code")
     def test_negative_two_emails(self, client_mysql):
         username = self.builder.username()
         password = self.builder.password()
@@ -207,28 +222,21 @@ class TestNegativeAuth(BaseCase):
         assert auth_page.find(auth_page.locators.LOGIN_LOCATOR)
         assert client_mysql.get_data(username) is None
 
-    def test_negative_spaces_password(self, client_mysql):
-        username = self.builder.username(username_length=11)
-        password = 3*" "+self.builder.password(password_length=5)
-        email = self.builder.email(email_length=11)
-        self.logger.info(f"Auth with {username}, spaces before password {password}, {email}")
-        auth_page = self.base_page.switch()
-        main_p = auth_page.register(username, password, email)
-        assert main_p.find((main_p.locators.LOGIN_LOCATOR[0], main_p.locators.LOGIN_LOCATOR[1].format(username)))
-        user = client_mysql.get_data(username=username).username
-        password_db = client_mysql.get_data(username=username).password
-        client_mysql.delete_user(username)
-        assert password_db == password
-        assert user
 
 @allure.feature('UI tests')
 @pytest.mark.UI
 class TestMain(BaseCase):
 
-    def test_positive_logout(self):
+    def test_positive_logout(self, client_mysql):
         self.logger.info(f"Check button logout")
         self.main_page.click(self.main_page.locators.LOGOUT_LOCATOR)
+        active = client_mysql.get_data(username=self.user).active
         assert self.main_page.find(self.base_page.locators.LOGIN_LOCATOR)
+        assert active == 0
+
+    def test_positive_facts_python(self):
+        self.logger.info(f"Check python facts")
+        assert self.main_page.find(self.main_page.locators.FACTS_LOCATOR)
 
     def test_positive_vk(self):
         self.logger.info(f"Check VK_ID")
@@ -250,6 +258,7 @@ class TestMain(BaseCase):
         with self.switch_to_next_windows(current_window, close=True):
             assert expected_name in self.driver.current_url
 
+    @allure.description("Clicking on navbar element, but another not clickable")
     def test_positive_navbar_python(self):
         self.logger.info(f"Testing navbar clicking on Python")
         current_window = self.driver.current_window_handle
@@ -284,6 +293,7 @@ class TestMain(BaseCase):
             else:
                 assert expected_name[0] in (self.driver.current_url).lower()
 
+    @allure.description("Clicking on centos element, but fedora page is openning")
     def test_positive_centos(self):
         self.logger.info(f"Testing navbar clicking on Centos, but Fedora is opening")
         current_window = self.driver.current_window_handle
@@ -296,16 +306,21 @@ class TestMain(BaseCase):
 class TestPositiveLoginPage(BaseCase):
     need_login = False
 
-    def test_positive_login(self):
-        self.logger.info(f"Testing normal login page")
+    def test_positive_login(self, client_mysql):
+        self.logger.info("Testing normal login page")
         self.login_page.login(self.user, self.password)
+        active = client_mysql.get_data(username=self.user).active
         assert self.driver.current_url == 'http://myapp_proxy:8070/welcome/'
+        assert active == 1
 
     def test_positive_login_spaces(self):
-        self.logger.info(f"Testing normal login page")
+        self.logger.info("Testing normal login page")
         self.login_page.login((self.user+' '), self.password)
         assert self.driver.current_url == 'http://myapp_proxy:8070/welcome/'
 
+    @allure.description(
+        "Login twice, but in second time we add spaces after login(length > 16) but successful login and incorect "
+        "length alarm is shown")
     def test_positive_login_back_spaces(self):
         self.logger.info(f"Testing login page, while going back and add spaces")
         self.login_page.login(self.user, self.password)
@@ -338,34 +353,45 @@ class TestNegativeLoginPage(BaseCase):
             self.login_page.login(self.builder.username(), self.builder.password())
             assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
 
-    def test_negative_login_email(self):
+    def test_negative_login_email(self, client_mysql):
         self.logger.info(f"Testing login page with email not login")
         with pytest.raises(ErrorLoginException):
             self.login_page.login(self.email, self.password)
+            active = client_mysql.get_data(username=self.user).active
             assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+            assert active == 0
 
-    def test_negative_without_login(self):
+    def test_negative_without_login(self, client_mysql):
         self.logger.info(f"Testing login page without login")
         with pytest.raises(ErrorLoginException):
             self.login_page.login('', self.password)
-            assert self.driver.current_url == self.login_page.url  and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+            active = client_mysql.get_data(username=self.user).active
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+            assert active == 0
 
-    def test_negative_password_spaces(self):
+    def test_negative_password_spaces(self, client_mysql):
         self.logger.info(f"Testing login page without login")
         with pytest.raises(ErrorLoginException):
             self.login_page.login(self.user, (self.password+'  '))
-            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+            active = client_mysql.get_data(username=self.user).active
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(
+                self.login_page.locators.ERROR_LOCATOR)
+            assert active == 0
 
-    def test_negative_login_spaces(self):
+    def test_negative_login_spaces(self, client_mysql):
         self.logger.info(f"Testing login page without login")
         with pytest.raises(ErrorLoginException):
             self.login_page.login(' ' + self.user, self.password)
-            assert self.driver.current_url == self.login_page.url and self.login_page.find(self.login_page.locators.ERROR_LOCATOR)
+            active = client_mysql.get_data(username=self.user).active
+            assert self.driver.current_url == self.login_page.url and self.login_page.find(
+                self.login_page.locators.ERROR_LOCATOR)
+            assert active == 0
 
 @allure.feature('UI tests')
 @pytest.mark.UI
 class TestSpecial(BaseCase):
 
+    @allure.description("Close page, active should equal 0, but 1 in db")
     def test_active(self, client_mysql):
         self.driver.close()
         active = client_mysql.get_data(username=self.user).active

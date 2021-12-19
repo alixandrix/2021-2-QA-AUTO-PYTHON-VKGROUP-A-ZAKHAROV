@@ -35,6 +35,7 @@ class MainPageLocators:
     TCPDUMP_LOCATOR = (By.XPATH, '//li/a[@href="https://hackertarget.com/tcpdump-examples/"]')
     LOGOUT_LOCATOR = (By.XPATH, '//div/a[@href="/logout"]')
     INCORRECT_LENGTH_LOCATOR = (By.ID, "flash")
+    FACTS_LOCATOR = (By.XPATH, '//div/p[not(contains(text(), "powered by ТЕХНОАТОМ"))]')
 
 class AuthPageLocators:
     SUBMIT = (By.ID, "submit")

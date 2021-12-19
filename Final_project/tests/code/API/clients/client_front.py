@@ -7,6 +7,7 @@ class ApiClientFront(ApiClient):
     def post_headers(self):
         return {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Host': self.base_url[7:-1]
         }
 
     @allure.step("Auth with {user}, {password}, {email}(front api)")

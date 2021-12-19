@@ -2,11 +2,11 @@ import logging
 import time
 import allure
 from selenium.webdriver import ActionChains
-from UI.locators import basic_locators
+from UI.code.locators import basic_locators
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from UI.utils.exceptions import PageNotLoadedException
+from UI.code.utils.exceptions import PageNotLoadedException
 
 
 CLICK_RETRY = 3
@@ -73,7 +73,7 @@ class BasePage(object):
     def switch(self):
         self.find(self.locators.CREATE_ACCOUNT, timeout=1)
         self.click(self.locators.CREATE_ACCOUNT)
-        from UI.pages.auth_page import AuthPage
+        from UI.code.pages.auth_page import AuthPage
         return AuthPage(self.driver)
 
 

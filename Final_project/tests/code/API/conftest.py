@@ -1,18 +1,16 @@
+import pytest
+import allure
 import os
 import shutil
 import sys
 import logging
-from UI.fixtures import *
-
+from API.clients.client_front import ApiClientFront
 
 
 @pytest.fixture(scope='session')
 def config():
-    browser = 'chrome'
-    url = 'http://myapp_proxy:8070/'
-    selenoid = 'http://127.0.0.1:4444/wd/hub'
-    return {'browser': browser, 'url': url, 'selenoid': selenoid}
-
+    url = 'http://0.0.0.0:8060/'
+    return {'url': url}
 
 @pytest.fixture(scope='function')
 def logger(temp_dir, config):
@@ -69,3 +67,10 @@ def temp_dir(request):
 @pytest.fixture(scope='session')
 def repo_root():
     return os.path.abspath(os.path.join(__file__, os.path.pardir))
+
+@pytest.fixture
+def api_client_front(config):
+    return ApiClientFront(config['url'])
+
+
+
