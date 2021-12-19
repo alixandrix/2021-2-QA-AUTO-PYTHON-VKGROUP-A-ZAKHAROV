@@ -1,10 +1,12 @@
+import os
+
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from UI.code.utils.models import App_tb
 
 
 class TesterClient:
-    def __init__(self, user='test_qa', password='qa_test', db_name='TEST', host='127.0.0.1', port=3306):
+    def __init__(self, user='test_qa', password='qa_test', db_name=f"{os.environ['APP_DB']}", host=os.environ['PERCONA_HOST'], port=os.environ['PERCONA_PORT']):
         self.user = user
         self.password = password
         self.db_name = db_name

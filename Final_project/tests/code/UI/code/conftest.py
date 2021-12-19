@@ -8,8 +8,8 @@ from UI.code.fixtures import *
 @pytest.fixture(scope='session')
 def config():
     browser = 'chrome'
-    url = 'http://myapp_proxy:8070/'
-    selenoid = 'http://127.0.0.1:4444/wd/hub'
+    url = f"http://{os.environ['NGINX_HOST']}:{os.environ['NGINX_PORT']}/"
+    selenoid = f"http://{os.environ['SELENOID_HOST']}:{os.environ['SELENOID_PORT']}/wd/hub"
     return {'browser': browser, 'url': url, 'selenoid': selenoid}
 
 

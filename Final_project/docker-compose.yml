@@ -83,6 +83,28 @@ services:
       myapp:
         condition: service_started
 
+  tests:
+    container_name: tests
+    image: "tests:latest"
+    networks:
+      - my_network
+    volumes:
+      - ${PWD}/allure_dir:/tmp/allure-report
+    environment:
+      - APP_HOST
+      - APP_PORT
+      - APP_DB
+      - SELENOID_HOST
+      - SELENOID_PORT
+      - PERCONA_HOST
+      - PERCONA_PORT
+      - NGINX_HOST
+      - NGINX_PORT
+    depends_on:
+      myapp:
+        condition: service_started
+
+
 networks:
   my_network:
     external: true

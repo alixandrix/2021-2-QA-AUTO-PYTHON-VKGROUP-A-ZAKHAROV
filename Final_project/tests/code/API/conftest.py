@@ -9,7 +9,7 @@ from API.clients.client_front import ApiClientFront
 
 @pytest.fixture(scope='session')
 def config():
-    url = 'http://0.0.0.0:8060/'
+    url = f"http://{os.environ['APP_HOST']}:{os.environ['APP_PORT']}/"
     return {'url': url}
 
 @pytest.fixture(scope='function')
