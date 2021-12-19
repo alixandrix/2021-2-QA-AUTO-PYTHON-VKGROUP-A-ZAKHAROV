@@ -4,7 +4,7 @@ services:
   percona:
     container_name: percona
     networks:
-      - my_network
+      - ${MY_NETWORK}
     environment:
       MYSQL_ROOT_PASSWORD: pass
     image: "percona:5.7"
@@ -23,7 +23,7 @@ services:
   myapp:
     container_name: myapp
     networks:
-      - my_network
+      - ${MY_NETWORK}
     image: "myapp:latest"
     tty: true
     entrypoint: /app/myapp --config=/tmp/conf
@@ -44,7 +44,7 @@ services:
     container_name: mock
     image: "python_mock"
     networks:
-      - my_network
+      - ${MY_NETWORK}
     hostname: ${MOCK_HOST}
     environment:
       - MOCK_HOST
@@ -64,9 +64,9 @@ services:
     container_name: selenoid
     image: "aerokube/selenoid:latest"
     networks:
-      - my_network
+      - ${MY_NETWORK}
     volumes:
-      - ~/.aerokube/selenoid:/etc/selenoid
+      - ~/.aerokube/selenoid/browsers.json:/etc/selenoid/browsers.json
       - /var/run/docker.sock:/var/run/docker.sock
     command: ["-container-network", "my_network", "-conf", "/etc/selenoid/browsers.json", "-timeout", "3m"]
     ports:
@@ -76,7 +76,7 @@ services:
     container_name: myapp_proxy
     image: "nginx:stable"
     networks:
-      - my_network
+      - ${MY_NETWORK}
     volumes:
       - ${PWD}/confs/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
@@ -87,7 +87,7 @@ services:
     container_name: tests
     image: "tests:latest"
     networks:
-      - my_network
+      - ${MY_NETWORK}
     volumes:
       - ${PWD}/allure_dir:/tmp/allure-report
     environment:
@@ -108,5 +108,5 @@ services:
 networks:
   my_network:
     external: true
-    name: my_network
+    name: ${MY_NETWORK}
 
