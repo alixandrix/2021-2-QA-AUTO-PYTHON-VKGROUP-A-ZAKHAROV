@@ -82,7 +82,7 @@ services:
     networks:
       - my_network
     volumes:
-      - ${PWD}/allure_dir:/tmp/allure-report
+      - ${PWD}/logs:/tmp/
     environment:
       - APP_HOST
       - APP_PORT
