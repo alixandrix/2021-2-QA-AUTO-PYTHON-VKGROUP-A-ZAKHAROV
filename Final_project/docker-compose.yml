@@ -106,7 +106,7 @@ services:
 
 
 networks:
-  my_network:
+  ${MY_NETWORK}:
     external: true
     name: ${MY_NETWORK}
 
