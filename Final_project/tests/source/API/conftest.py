@@ -5,7 +5,7 @@ import shutil
 import sys
 import logging
 from clients.client_front import ApiClientFront
-
+from fixtures import *
 
 @pytest.fixture(scope='session')
 def config():
@@ -60,7 +60,7 @@ def temp_dir(request):
     test_dir = os.path.join(request.config.base_temp_dir,
                             name)
 
-    os.makedirs(test_dir)
+    os.makedirs(test_dir, mode=0o777)
     return test_dir
 
 
