@@ -2,9 +2,8 @@ import os
 import shutil
 import sys
 import logging
-import pytest
-import allure
 
+from UI.fixtures import *
 @pytest.fixture(scope='session')
 def config():
     browser = 'chrome'
@@ -48,8 +47,7 @@ def pytest_configure(config):
         if os.path.exists(base_dir):
             shutil.rmtree(base_dir)
 
-        os.makedirs(base_dir)
-        os.chmod(base_dir, 0o777)
+        os.makedirs(base_dir, mode=0o777)
 
 
     config.base_temp_dir = base_dir  # everywhere

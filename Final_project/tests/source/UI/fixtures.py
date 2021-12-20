@@ -3,7 +3,6 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from utils.creator import Builder
-from utils.client import TesterClient
 from UI.pages.base_page import BasePage
 from selenium.webdriver.remote.webdriver import WebDriver
 
