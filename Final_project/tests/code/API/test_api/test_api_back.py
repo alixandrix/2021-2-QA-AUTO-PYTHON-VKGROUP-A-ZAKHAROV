@@ -1,7 +1,7 @@
 import allure
 import pytest
 
-from base import ApiBase
+from API.test_api.base import ApiBase
 from API.exceptions import ResponseStatusCodeException
 from utils.creator import Builder
 

@@ -3,7 +3,7 @@ import random
 import allure
 import pytest
 
-from base import BaseCase
+from UI.test_ui.base import BaseCase
 from UI.locators import basic_locators
 from utils.creator import Builder
 from UI.utils.exceptions import ErrorLoginException, ErrorAuthException

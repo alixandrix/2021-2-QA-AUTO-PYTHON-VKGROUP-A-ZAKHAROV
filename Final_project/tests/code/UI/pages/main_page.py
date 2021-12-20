@@ -1,7 +1,7 @@
 import allure
 
 from UI.locators.basic_locators import MainPageLocators
-from base_page import BasePage
+from UI.pages.base_page import BasePage
 from selenium.webdriver.common.keys import Keys
 
 

@@ -1,7 +1,7 @@
 import allure
 from selenium.common.exceptions import TimeoutException
-from base_page import BasePage
-from main_page import MainPage
+from UI.pages.base_page import BasePage
+from UI.pages.main_page import MainPage
 from UI.locators.basic_locators import AuthPageLocators, MainPageLocators
 from UI.utils.exceptions import ErrorAuthException
 

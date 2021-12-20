@@ -1,8 +1,8 @@
 import allure
 from selenium.common.exceptions import TimeoutException
 from UI.locators.basic_locators import LoginPageLocators, MainPageLocators
-from base_page import BasePage
-from main_page import MainPage
+from UI.pages.base_page import BasePage
+from UI.pages.main_page import MainPage
 from UI.utils.exceptions import ErrorLoginException
 
 class LoginPage(BasePage):

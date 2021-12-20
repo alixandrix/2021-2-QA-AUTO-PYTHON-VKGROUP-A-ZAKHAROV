@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 import logging
-from clients.client_front import ApiClientFront
+from API.clients.client_front import ApiClientFront
 
 
 @pytest.fixture(scope='session')
