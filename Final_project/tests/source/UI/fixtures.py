@@ -12,14 +12,6 @@ from selenium.webdriver.remote.webdriver import WebDriver
 def base_page(driver):
     return BasePage(driver=driver)
 
-
-@pytest.fixture
-def client_mysql():
-    client = TesterClient()
-    client.connect()
-    yield client
-    client.connection.close()
-
 @pytest.fixture
 def main_page(driver):
     from UI.pages.main_page import MainPage

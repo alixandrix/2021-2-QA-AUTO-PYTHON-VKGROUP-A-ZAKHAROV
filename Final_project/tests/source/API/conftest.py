@@ -48,6 +48,7 @@ def pytest_configure(config):
             shutil.rmtree(base_dir)
 
         os.makedirs(base_dir)
+        os.chmod(base_dir, 0o777)
 
     config.base_temp_dir = base_dir  # everywhere
 

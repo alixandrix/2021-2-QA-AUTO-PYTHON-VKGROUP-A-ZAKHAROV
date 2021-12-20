@@ -8,6 +8,7 @@ from UI.locators import basic_locators
 from utils.creator import Builder
 from UI.utils.exceptions import ErrorLoginException, ErrorAuthException
 
+
 @allure.feature('UI tests')
 @pytest.mark.UI
 class TestPositiveAuth(BaseCase):

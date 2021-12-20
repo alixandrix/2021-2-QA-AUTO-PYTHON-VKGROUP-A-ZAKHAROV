@@ -1,6 +1,6 @@
-from utils.client import TesterClient
 import pytest
 
+from utils.client import TesterClient
 
 @pytest.fixture
 def client_mysql():
