@@ -62,7 +62,7 @@ class TestApiAuth(ApiBase):
             user = client_mysql.get_data(username=username).username
             assert user is None #password max 255, but 256 was given
 
-    @allure.description("Testing password with length 257, response code = 500")
+    @allure.description("Testing password with length 257, response source = 500")
     @pytest.mark.parametrize(
         'username, email, password',
         [

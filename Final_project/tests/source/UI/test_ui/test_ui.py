@@ -126,7 +126,7 @@ class TestPositiveAuth(BaseCase):
 class TestTwoEmails(BaseCase):
     need_login = False
 
-    @allure.description("Auth with email used earlier turn back 500 response status code")
+    @allure.description("Auth with email used earlier turn back 500 response status source")
     def test_negative_two_emails(self, client_mysql):
         username = self.builder.username()
         password = self.builder.password()

@@ -1,6 +1,8 @@
 from urllib.parse import urljoin
-from client_base import ApiClient
+from API.clients.client_base import ApiClient
 import allure
+
+
 class ApiClientFront(ApiClient):
 
     @property
