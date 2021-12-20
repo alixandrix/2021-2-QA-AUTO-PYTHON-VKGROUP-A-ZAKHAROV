@@ -9,7 +9,7 @@ from utils.creator import Builder
 from UI.utils.exceptions import ErrorLoginException, ErrorAuthException
 from fixtures import client_mysql
 
-"""@allure.feature('UI tests')
+@allure.feature('UI tests')
 @pytest.mark.UI
 class TestPositiveAuth(BaseCase):
     authorize = False
@@ -396,7 +396,7 @@ class TestSpecial(BaseCase):
     def test_active(self, client_mysql):
         self.driver.close()
         active = client_mysql.get_data(username=self.user).active
-        assert active == 0 #bug"""
+        assert active == 0 #bug
 
 
 
