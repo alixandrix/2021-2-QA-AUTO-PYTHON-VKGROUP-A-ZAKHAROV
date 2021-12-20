@@ -62,7 +62,7 @@ services:
     volumes:
       - ${PWD}/confs/:/etc/selenoid/
       - /var/run/docker.sock:/var/run/docker.sock
-    command: ["-container-network",  "${MY_NETWORK}", "-conf", "/etc/selenoid/browsers.json", "-timeout", "5m"]
+    command: ["-container-network",  "${MY_NETWORK}", "-conf", "/etc/selenoid/browsers.json", "-timeout", "5m", "-session-attempt-timeout", "60s"]
 
 
   myapp_proxy:

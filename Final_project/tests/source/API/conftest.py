@@ -6,6 +6,7 @@ import sys
 import logging
 from clients.client_front import ApiClientFront
 from fixtures import *
+from utils.run_command import run_command
 
 @pytest.fixture(scope='session')
 def config():
@@ -47,7 +48,7 @@ def pytest_configure(config):
         if os.path.exists(base_dir):
             shutil.rmtree(base_dir)
 
-        os.makedirs(base_dir, mode=0o777)
+        os.makedirs(base_dir)
 
     config.base_temp_dir = base_dir  # everywhere
 
@@ -60,9 +61,12 @@ def temp_dir(request):
     test_dir = os.path.join(request.config.base_temp_dir,
                             name)
 
-    os.makedirs(test_dir, mode=0o777)
+    os.makedirs(test_dir)
     return test_dir
 
+def pytest_unconfigure(config):
+    if not hasattr(config, 'workerinput'):
+        run_command("chmod -R 777 /tmp/allure-report")
 
 @pytest.fixture(scope='session')
 def repo_root():

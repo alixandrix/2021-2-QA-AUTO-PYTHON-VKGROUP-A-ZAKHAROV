@@ -2,7 +2,7 @@ import os
 import shutil
 import sys
 import logging
-
+from utils.run_command import run_command
 from UI.fixtures import *
 @pytest.fixture(scope='session')
 def config():
@@ -47,7 +47,7 @@ def pytest_configure(config):
         if os.path.exists(base_dir):
             shutil.rmtree(base_dir)
 
-        os.makedirs(base_dir, mode=0o777)
+        os.makedirs(base_dir)
 
 
     config.base_temp_dir = base_dir  # everywhere
@@ -64,6 +64,9 @@ def temp_dir(request):
     os.makedirs(test_dir, mode=0o777)
     return test_dir
 
+def pytest_unconfigure(config):
+    if not hasattr(config, 'workerinput'):
+        run_command("chmod -R 777 /tmp/allure-report")
 
 @pytest.fixture(scope='session')
 def repo_root():
