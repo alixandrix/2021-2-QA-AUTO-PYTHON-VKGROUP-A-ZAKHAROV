@@ -1,9 +1,8 @@
-
 import os
 import shutil
 import sys
 import logging
-from UI.code.fixtures import *
+from fixtures import *
 
 @pytest.fixture(scope='session')
 def config():

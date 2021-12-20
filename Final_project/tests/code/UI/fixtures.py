@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from utils.creator import Builder
 from utils.client import TesterClient
-from UI.code.pages.base_page import BasePage
+from UI.pages.base_page import BasePage
 from selenium.webdriver.remote.webdriver import WebDriver
 
 
@@ -22,7 +22,7 @@ def client_mysql():
 
 @pytest.fixture
 def main_page(driver):
-    from UI.code.pages.main_page import MainPage
+    from UI.pages.main_page import MainPage
     return MainPage(driver=driver)
 
 

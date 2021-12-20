@@ -4,9 +4,9 @@ import allure
 import pytest
 
 from base import BaseCase
-from UI.code.locators import basic_locators
+from UI.locators import basic_locators
 from utils.creator import Builder
-from UI.code.utils.exceptions import ErrorLoginException, ErrorAuthException
+from UI.utils.exceptions import ErrorLoginException, ErrorAuthException
 
 @allure.feature('UI tests')
 @pytest.mark.UI
