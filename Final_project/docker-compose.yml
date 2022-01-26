@@ -1,0 +1,105 @@
+version: '2.1'
+
+services:
+  percona:
+    container_name: percona
+    networks:
+      - my_network
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+    image: "percona:5.7"
+    tty: true
+    volumes:
+      - ${PWD}/databases/app_db/my_app.sql:/docker-entrypoint-initdb.d/app.sql
+      - ${PWD}/databases/mock_db/mock.sql:/docker-entrypoint-initdb.d/mock.sql
+    command: ["--max-connections", "20000"]
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "-uroot", "-ppass", "ping", "-h", "percona" ]
+      timeout: 1s
+      retries: 30
+
+  myapp:
+    container_name: myapp
+    networks:
+      - my_network
+    image: "myapp:latest"
+    tty: true
+    entrypoint: /app/myapp --config=/tmp/conf
+    volumes:
+      - ${PWD}/confs/conf:/tmp/conf
+    links:
+      - percona
+      - mock
+    depends_on:
+      mock:
+        condition: service_healthy
+      percona:
+        condition: service_healthy
+
+  mock:
+    container_name: mock
+    image: "python_mock"
+    networks:
+      - my_network
+    hostname: ${MOCK_HOST}
+    environment:
+      - MOCK_HOST
+      - MOCK_PORT
+      - MOCK_DB
+    healthcheck:
+      test: [ "CMD", "curl", "-v", "http://${MOCK_HOST}:${MOCK_PORT}/status" ]
+      timeout: 1s
+      retries: 3
+    depends_on:
+      percona:
+        condition: service_healthy
+
+  selenoid:
+    container_name: selenoid
+    image: "aerokube/selenoid:latest"
+    networks:
+      - my_network
+    volumes:
+      - ${PWD}/confs/:/etc/selenoid/
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["-container-network",  "${MY_NETWORK}", "-conf", "/etc/selenoid/browsers.json", "-timeout", "5m", "-session-attempt-timeout", "60s"]
+
+
+  myapp_proxy:
+    container_name: myapp_proxy
+    image: "nginx:stable"
+    networks:
+      - my_network
+    volumes:
+      - ${PWD}/confs/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      myapp:
+        condition: service_started
+
+  tests:
+    container_name: tests
+    image: "tests:latest"
+    networks:
+      - my_network
+    volumes:
+      - ${PWD}/logs:/tmp/
+    environment:
+      - APP_HOST
+      - APP_PORT
+      - APP_DB
+      - SELENOID_HOST
+      - SELENOID_PORT
+      - PERCONA_HOST
+      - PERCONA_PORT
+      - NGINX_HOST
+      - NGINX_PORT
+    depends_on:
+      myapp:
+        condition: service_started
+
+
+networks:
+  my_network:
+    external: true
+    name: ${MY_NETWORK}
+
